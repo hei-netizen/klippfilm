@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 250 64">
+  <defs><style>@import url('https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@800&amp;display=swap');</style></defs>
+  <g transform="rotate(-14 7 26)"><rect x="7" y="13" width="51" height="10.5" rx="2.5" fill="#F5F4F0"/></g>
+  <rect x="7" y="28" width="51" height="30" rx="5" fill="#F5F4F0"/>
+  <circle cx="45.5" cy="43" r="5.2" fill="#E4352B"/>
+  <text x="70" y="55" font-family="Schibsted Grotesk, sans-serif" font-weight="800" font-size="54" letter-spacing="-2.6" fill="#F5F4F0">klipp</text>
+</svg>
