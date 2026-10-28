@@ -41,9 +41,9 @@ button{font-family:inherit}
 .steps .ln{width:28px;height:2px;background:var(--line)}
 @media(max-width:600px){.steps .lbl{display:none}}
 
-.main{max-width:1080px;margin:0 auto;padding:18px 24px 80px;display:grid;grid-template-columns:1fr 1.02fr;grid-template-areas:"intro pay" "order pay";gap:0 28px;align-items:start}
+.main{max-width:1080px;margin:0 auto;padding:18px 24px 80px;display:grid;grid-template-columns:1fr 1.02fr;grid-template-areas:"intro pay" "order pay";grid-template-rows:auto 1fr;gap:0 28px;align-items:start}
 .intro{grid-area:intro}.order{grid-area:order}.pay{grid-area:pay;position:sticky;top:20px}
-@media(max-width:880px){.main{grid-template-columns:1fr;grid-template-areas:"intro" "pay" "order";gap:18px}.pay{position:static}.pbtn .ics em{font-size:10.5px;padding:3px 6px}.pbtn{font-size:17px}}
+@media(max-width:880px){.main{grid-template-columns:1fr;grid-template-areas:"intro" "order" "pay";grid-template-rows:none;gap:18px}.pay{position:static}.pbtn .ics em{font-size:10.5px;padding:3px 6px}.pbtn{font-size:17px}}
 h1{font-family:var(--disp);font-weight:800;letter-spacing:-0.04em;line-height:.98;font-size:clamp(40px,5.4vw,64px);margin:6px 0 12px}
 .lede{color:var(--muted);font-size:17px;max-width:42ch;margin-bottom:26px}
 .card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--sh)}
@@ -61,6 +61,14 @@ h1{font-family:var(--disp);font-weight:800;letter-spacing:-0.04em;line-height:.9
 .det .row span{color:var(--muted)}
 .det .row p{font-weight:600;overflow-wrap:anywhere}
 .det .row p.q{font-weight:500;color:var(--ink2);font-style:italic}
+/* én boks per film (flere filmer) */
+.films{display:grid;gap:10px;padding-bottom:6px}
+.film{border:1px solid var(--line);border-radius:var(--rs);padding:14px 16px;background:var(--bg)}
+.film .fh{display:flex;justify-content:space-between;align-items:baseline;gap:12px}
+.film .fh b{font-family:var(--disp);font-size:17px;letter-spacing:-0.02em}
+.film .fh em{font-style:normal;font-family:var(--disp);font-weight:800;font-size:17px;white-space:nowrap}
+.film small{display:block;color:var(--muted);font-size:13.5px;margin-top:3px}
+.film p{margin-top:8px;font-size:14.5px;color:var(--ink2);font-style:italic;overflow-wrap:anywhere}
 .edit{display:inline-block;margin-top:14px;font-size:14px;font-weight:700;color:var(--muted);border-bottom:1.5px solid var(--line)}
 .edit:hover{color:var(--ink);border-color:var(--ink)}
 .tot{display:flex;justify-content:space-between;align-items:baseline;border-top:1px solid var(--line);margin-top:18px;padding-top:18px}
@@ -156,8 +164,8 @@ body,h1,h2,h3,.logo,button,input,textarea{font-family:'Schibsted Grotesk',system
   <div class="main">
     <section class="intro">
       <span style="font-family:var(--disp);font-weight:700;color:var(--muted);font-size:15px">Nesten ferdig</span>
-      <h1>Én ting igjen, <span class="g" id="hiName">så setter vi i gang.</span></h1>
-      <p class="lede">Betal <span class="js-pris">99</span> kr, så begynner vi på filmen din. Den kommer som en Drive-lenke til e-posten din innen 6 til 12 timer.</p>
+      <h1><span id="hiName">Takk!</span> <span class="g">Her er bestillingen din.</span></h1>
+      <p class="lede">Se over bestillingen og betal <span class="js-pris">99</span> kr. Vi sender filmen til e-posten din innen 6 til 24 timer.</p>
     </section>
 
       <div class="card order">
@@ -165,13 +173,14 @@ body,h1,h2,h3,.logo,button,input,textarea{font-family:'Schibsted Grotesk',system
           <div class="th"><video src="video/telenor.mp4" poster="img/telenor-poster.jpg" autoplay muted loop playsinline></video></div>
           <div><b>3D-reklamefilm</b><small>Stående 9:16 · lyd og musikk · logoen din i 3D</small></div>
           <div class="pr">99 kr</div></div>
+        <div class="films" id="films" style="display:none"></div>
         <div class="xtra" id="xtra" style="display:none"><span id="xtraTxt"></span><b id="xtraPr"></b>
         </div>
         <div class="det">
           <div class="row"><span>Nettside</span><p id="o-web"></p></div>
           <div class="row"><span>Filmen viser</span><p id="o-tema"></p></div>
-          <div class="row"><span>Formater</span><p id="o-kanal"></p></div>
-          <div class="row"><span>Ønskene dine</span><p class="q" id="o-besk"></p></div>
+          <div class="row" id="r-kanal"><span>Formater</span><p id="o-kanal"></p></div>
+          <div class="row" id="r-besk"><span>Ønskene dine</span><p class="q" id="o-besk"></p></div>
           <div class="row"><span>Sendes til</span><p id="o-epost"></p></div>
         </div>
         <a class="edit" href="index.html#bestill">Endre bestillingen</a>
@@ -181,7 +190,7 @@ body,h1,h2,h3,.logo,button,input,textarea{font-family:'Schibsted Grotesk',system
 
     <section class="card pay">
       <h2>Betaling</h2>
-      <p class="sub">Én film, én betaling. Kvittering på e-post.</p>
+      <p class="sub" id="paySub">Én film, én betaling. Kvittering på e-post.</p>
 
       <!-- LIVE: Stripe sin innebygde betaling (Apple Pay, Google Pay og kort) monteres her -->
       <div id="stripeCheckout" style="display:none"></div>
@@ -216,11 +225,14 @@ body,h1,h2,h3,.logo,button,input,textarea{font-family:'Schibsted Grotesk',system
 
 <script>
 /* ===== KONFIG =====
-   STRIPE_PK  = Stripe «Publishable key» (pk_live_… / pk_test_…). Er den satt, vises Stripe sin
-                innebygde betaling (Apple Pay, Google Pay, kort) i stedet for forhåndsvisningen.
-                Krever Stripe-nøkkel på webhotellet (api/create-checkout-session.php, se README).
+   Betalingen går via Cloudflare Worker «klippfilm-betaling» (lager Stripe-økten og regner ut prisen).
+   STRIPE_PK_LIVE = Stripe «Publishable key» (pk_live_…). Tom = betalingen er stengt på klippfilm.no.
+   STRIPE_PK_TEST = testnøkkel; brukes på localhost og med ?stripetest=1.
    PAY_VIPPS_URL = Vipps-betalingslenke når Vipps-avtalen er på plass. */
-var STRIPE_PK='';
+var PAY_API='https://klippfilm-betaling.klippfilm-betaling.workers.dev';
+var STRIPE_PK_LIVE='pk_live_51UVT6VPToor81ZSyOTLw3K6FQmf7SetoKQ4vKQ6f7L0b8wObFU0P9bmQcjhrsQm8YW7PlIJk7ylo91LsiYqWXVG1000cxqRJs9';
+var STRIPE_PK_TEST='pk_test_51UVT6VPToor81ZSyFXAHDafnlsLkpB6udkKxbJMo8NpOzAHW0DS7asbM9ntq9pPDpJTbEtKdB5VfHphkoV9Bdb1z00krntmfFU';
+var STRIPE_PK=(/^(localhost|127\.0\.0\.1)$/.test(location.hostname)||/[?&]stripetest=1/.test(location.search))?STRIPE_PK_TEST:STRIPE_PK_LIVE;
 var PAY_CARD_URL='';  /* (eldre, én pris) */
 /* Stripe Payment Links per stykkpris og antall, nøkkel «stykkpris x antall», f.eks. {'99x1':'https://buy.stripe.com/…','109x2':'…'}. Brukes når siden ligger uten server (GitHub Pages). */
 var PAY_LINKS={};
@@ -228,6 +240,7 @@ var PAY_VIPPS_URL='';
 
 var o=null;try{o=JSON.parse(sessionStorage.getItem('klipp_ordre')||'null');}catch(e){}
 /* ?demo=1 viser siden med en eksempelbestilling (for forhåndsvisning) */
+if(!o&&/[?&]demo=2/.test(location.search)){o={id:'KL-DEMO02',name:'Kari Nordmann',email:'kari@eksempel.no',website:'kaffebrenneriet.no',tema:'Et produkt',antall:2,filmer:'Kort,Medium',ekstraformater:1,pakke:'Kort + Medium',formater:'Film 1: Stående 9:16, Kvadrat 1:1 | Film 2: Stående 9:16',pris:308,beskrivelse:'Film 1 (Kort): Vis kaffen vår bli brent, mørkt og eksklusivt\nFilm 2 (Medium): Teamet vårt og hva vi står for, rolig og varmt'};}
 if(!o&&/[?&]demo=1/.test(location.search)){o={id:'KL-DEMO01',name:'Kari Nordmann',email:'kari@eksempel.no',website:'kaffebrenneriet.no',tema:'Et produkt',kanal:'Instagram og TikTok',beskrivelse:'Vis kaffen vår bli brent, mørkt og eksklusivt'};}
 if(!o){
   document.getElementById('app').innerHTML='<div class="nope"><h1>Vi finner ingen <span class="g">bestilling.</span></h1><p style="color:#6B6775">Start med å fortelle oss kort hva filmen skal vise, så kommer du hit etterpå.</p><a class="btn" href="index.html#bestill">Til bestillingen</a></div>';
@@ -244,7 +257,20 @@ if(!o){
   if(XN>0){document.getElementById('xtra').style.display='flex';document.getElementById('xtraTxt').textContent=XN+' ekstra format'+(XN>1?'er':'')+' × 10 kr';document.getElementById('xtraPr').textContent='+'+XN*10+' kr';}
   PAY_CARD_URL=PAY_LINKS[UNIT+'x'+Q]||PAY_CARD_URL;document.getElementById('o-besk').innerHTML=(o.beskrivelse||'-').split('\n').map(function(l){return '«'+l.replace(/[<>&]/g,function(c){return {'<':'&lt;','>':'&gt;','&':'&amp;'}[c];})+'»';}).join('<br>');set('o-epost',o.email);
   document.getElementById('o-id').textContent='Ordrenummer '+o.id;
-  var first=(o.name||'').trim().split(/\s+/)[0];if(first)document.getElementById('hiName').textContent=first+', så setter vi i gang.';
+  /* flere filmer: én boks per film med lengde, formater, ønske og pris */
+  if(FL.length>1){
+    var esc=function(t){return String(t||'').replace(/[<>&]/g,function(c){return {'<':'&lt;','>':'&gt;','&':'&amp;'}[c];});};
+    var ft=String(o.formater||'').trim(),per=/^Film \d+:/.test(ft)||ft.indexOf('|')>=0;
+    var fmtFor=function(i){var x=per?(ft.split('|')[i]||''):ft;x=x.replace(/^\s*Film \d+:\s*/,'').trim();return x||'Stående 9:16';};
+    var bl=String(o.beskrivelse||'').split('\n'),besFor=function(i){return (bl[i]||'').replace(/^\s*Film \d+(\s*\([^)]*\))?:\s*/,'').trim();};
+    document.getElementById('films').innerHTML=FL.map(function(k,i){var f=fmtFor(i),n=f.split(',').filter(function(v){return v.trim();}).length,pr=(PAKKE[k]||99)+10*Math.max(0,n-1),b=besFor(i);
+      return '<div class="film"><div class="fh"><b>Film '+(i+1)+' · '+esc(k)+'</b><em>'+pr+' kr</em></div><small>'+esc(LEN[k]||'')+' · '+esc(f)+'</small>'+(b?'<p>«'+esc(b)+'»</p>':'')+'</div>';}).join('');
+    document.getElementById('films').style.display='grid';
+    document.getElementById('paySub').textContent=(FL.length===2?'To':FL.length===3?'Tre':FL.length===4?'Fire':'Fem')+' filmer, én betaling. Kvittering på e-post.';
+    document.querySelector('.prod').style.display='none';document.getElementById('xtra').style.display='none';
+    document.getElementById('r-kanal').style.display='none';document.getElementById('r-besk').style.display='none';
+  }
+  var first=(o.name||'').trim().split(/\s+/)[0];if(first)document.getElementById('hiName').textContent='Takk, '+first+'.';
   try{if(window.gtag)gtag('event','begin_checkout',{value:99,currency:'NOK',transaction_id:o.id});}catch(e){}
 
   if(PAY_VIPPS_URL){var vb=document.getElementById('payVipps');vb.style.display='';vb.addEventListener('click',function(){location.href=PAY_VIPPS_URL;});}
@@ -257,7 +283,7 @@ if(!o){
     sc.onload=function(){
       var stripe=Stripe(STRIPE_PK);
       stripe.initEmbeddedCheckout({fetchClientSecret:function(){
-        return fetch('/api/create-checkout-session.php',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(o)})
+        return fetch(PAY_API+'/create-checkout-session',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(Object.assign({},o,{test:STRIPE_PK===STRIPE_PK_TEST}))})
           .then(function(r){return r.json();}).then(function(j){if(!j.clientSecret)throw new Error('ingen økt');return j.clientSecret;});
       }}).then(function(c){c.mount('#stripeCheckout');})
         .catch(function(){box.innerHTML='<p class="consent" style="color:#C4302B">Betalingen kunne ikke lastes. Prøv igjen om litt.</p>';});
