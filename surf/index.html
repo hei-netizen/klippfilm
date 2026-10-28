@@ -57,6 +57,9 @@ a{color:var(--accent)}
 .fc-head .sub{font-size:13px;color:var(--muted)}
 .fc-head .links{display:flex;gap:14px;flex-wrap:wrap;font-size:13px}
 .fc-head a{color:var(--accent)}
+.steps{display:flex;margin-top:4px}
+.steps .btn+.btn{border-left:0}
+.steps .btn.on{background:var(--ink);color:#fff;border-color:var(--ink)}
 .fc-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch;border-top:1px solid var(--line)}
 table.fct{border-collapse:collapse;font-family:"Helvetica Neue",Arial,sans-serif;font-size:13px;font-variant-numeric:tabular-nums;white-space:nowrap;width:max-content;color:#222}
 .fct th{text-transform:none;letter-spacing:0;color:#222;position:static;background:none;font-family:inherit}
@@ -724,7 +727,8 @@ const state = {
   skill: store.get("skill") || "middels",
   maxDrive: store.get("maxDrive") || 4,
   when: store.get("when") || "3d",
-  forecast: null, drive: null, loadedRadius: 0, fetchedAt: null, selId: null
+  forecast: null, drive: null, loadedRadius: 0, fetchedAt: null, selId: null,
+  step: store.get("step")===3 ? 3 : 1
 };
 if(!RADIUS_KM[state.maxDrive]) state.maxDrive = 4;
 
@@ -860,8 +864,8 @@ function wxIcon(c,day){
 function renderForecast(r){
   const el = $("#fc");
   if(!r){ el.innerHTML = ""; return; }
-  const tz = r.tz, now = Date.now(), H = r.scored, s = r.spot;
-  const cols = H.map((h,i)=>({...h,i})).filter(h=>h.ms >= now-3*36e5 && parts(h.ms,tz).h % 3 === 0 && h.h!=null);
+  const tz = r.tz, now = Date.now(), H = r.scored, s = r.spot, step = state.step;
+  const cols = H.map((h,i)=>({...h,i})).filter(h=>h.ms >= now-step*36e5 && parts(h.ms,tz).h % step === 0 && h.h!=null);
   if(!cols.length){ el.innerHTML = ""; return; }
 
   // Høy- og lavvann fra timesserien
@@ -871,12 +875,12 @@ function renderForecast(r){
     if(a==null||b==null||c==null) continue;
     if(b>=a && b>c) ext.push({ms:H[i].ms, hi:true, v:b}); else if(b<=a && b<c) ext.push({ms:H[i].ms, hi:false, v:b});
   }
-  const inCol = (c,ms) => ms>=c.ms && ms<c.ms+3*36e5;
+  const inCol = (c,ms) => ms>=c.ms && ms<c.ms+step*36e5;
 
   const days = [];
   cols.forEach(c=>{ const d = parts(c.ms,tz).date, last = days[days.length-1];
     if(last && last.date===d) last.n++; else days.push({date:d, ms:c.ms, n:1}); c.dayIdx = days.length-1; });
-  const inBest = c => r.best && c.ms + 3*36e5 > r.best.start && c.ms <= r.best.end;
+  const inBest = c => r.best && c.ms + step*36e5 > r.best.start && c.ms <= r.best.end;
   const cls = (c, extra="") => { const k = [extra, (c.dayIdx>0 && parts(c.ms,tz).h===0)?"dstart":"", inBest(c)?"best":""].filter(Boolean).join(" "); return k?`class="${k}"`:""; };
   const row = (label, fn, rowCls="") => `<tr${rowCls?` class="${rowCls}"`:""}><th class="lab" scope="row">${label}</th>${cols.map(fn).join("")}</tr>`;
 
@@ -885,13 +889,14 @@ function renderForecast(r){
     return `<th class="day${k%2?" alt":""}" colspan="${d.n}"><span>${d.n>=2?DAYFULL[wd]:DAYFULL[wd].slice(0,3)}</span>${dd}</th>`;
   }).join("");
   const sunAt = (c, idx) => { const sun = r.sun[parts(c.ms,tz).date]; return sun && inCol(c, sun[idx]) ? parts(sun[idx],tz).hm : "–"; };
-  const rain = c => { let t=0, any=false; for(let k=0;k<3;k++){ const v = H[c.i+k]?.prec; if(v!=null){ t+=v; any=true; } } return any ? (t<0.1 ? "–" : t<1 ? t.toFixed(1).replace(".",",") : Math.round(t)) : "–"; };
+  const rain = c => { let t=0, any=false; for(let k=0;k<step;k++){ const v = H[c.i+k]?.prec; if(v!=null){ t+=v; any=true; } } return any ? (t<0.1 ? "–" : t<1 ? t.toFixed(1).replace(".",",") : Math.round(t)) : "–"; };
 
   el.innerHTML = `<div class="fc">
     <div class="fc-head">
       <h3>${esc(s.name)}</h3>
       <div class="sub">${esc(s.region)} · vender mot ${compass(s.facing)} · ${driveTxt(r)} kjøring · tidevann: ${r.tideSrc} · lokal tid</div>
       <div class="links">${links(r)}</div>
+      <div class="steps" role="group" aria-label="Oppløsning">${[[3,"Hver 3. time"],[1,"Hver time"]].map(([v,t])=>`<button type="button" class="btn${step===v?" on":""}" data-step="${v}" aria-pressed="${step===v}">${t}</button>`).join("")}</div>
     </div>
     <div class="fc-scroll"><table class="fct">
       <thead><tr><th class="lab"></th>${dayHead}</tr></thead>
@@ -919,6 +924,7 @@ function renderForecast(r){
     </div>
     <p class="fc-note">${esc(s.note)}</p>
   </div>`;
+  el.querySelectorAll("[data-step]").forEach(btn=>btn.onclick=()=>{ state.step = +btn.dataset.step; store.set("step",state.step); renderForecast(r); });
   const best = el.querySelector("td.best"), sc = el.querySelector(".fc-scroll");
   if(best && sc) sc.scrollLeft = Math.max(0, best.offsetLeft - 150);
 }
