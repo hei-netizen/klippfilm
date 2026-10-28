@@ -192,6 +192,10 @@ body,h1,h2,h3,.logo,button,input,textarea{font-family:'Schibsted Grotesk',system
       <h2>Betaling</h2>
       <p class="sub" id="paySub">Én film, én betaling. Kvittering på e-post.</p>
 
+      <!-- Vipps (ePayment via Cloudflare Worker), vises over kortbetalingen -->
+      <button class="pbtn vipps" id="payVipps" type="button" style="display:none">Betal med <span class="vw">vipps</span></button>
+      <div class="or" id="vippsOr" style="display:none;margin-top:14px">eller betal med kort</div>
+
       <!-- LIVE: Stripe sin innebygde betaling (Apple Pay, Google Pay og kort) monteres her -->
       <div id="stripeCheckout" style="display:none"></div>
 
@@ -212,11 +216,10 @@ body,h1,h2,h3,.logo,button,input,textarea{font-family:'Schibsted Grotesk',system
         <button class="pbtn card" id="payCard" type="button" data-pay>Betal <span class="js-pris">99</span> kr</button>
       </div>
 
-      <button class="pbtn vipps" id="payVipps" type="button" style="display:none">Betal med <span class="vw">vipps</span></button>
       <p class="consent">Ved å betale bekrefter du at bestillingen stemmer, og at klipp kan bruke innholdet på nettsiden din til å lage filmen. Du ber oss starte med en gang, og godtar at angreretten faller bort når filmen er levert. Se <a href="vilkar.html" style="text-decoration:underline">salgsvilkårene</a>.</p>
 
       <div class="trust">
-        <div><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><rect x="4" y="10" width="16" height="11" rx="2.5"/><path d="M8 10V7a4 4 0 0 1 8 0v3" stroke-linecap="round"/></svg><span><b>Sikker betaling med Stripe.</b> Kortet ditt går rett til Stripe. Vi ser aldri kortnummeret.</span></div>
+        <div><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><rect x="4" y="10" width="16" height="11" rx="2.5"/><path d="M8 10V7a4 4 0 0 1 8 0v3" stroke-linecap="round"/></svg><span><b>Sikker betaling med Vipps og Stripe.</b> Kortet ditt går rett til Stripe. Vi ser aldri kortnummeret.</span></div>
         <div><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M4 6h16v12H4z" stroke-linejoin="round"/><path d="M4 7l8 6 8-6" stroke-linejoin="round"/></svg><span><b>Kvittering på e-post</b> med en gang betalingen er gjennomført.</span></div>
       </div>
     </section>
@@ -228,7 +231,7 @@ body,h1,h2,h3,.logo,button,input,textarea{font-family:'Schibsted Grotesk',system
    Betalingen går via Cloudflare Worker «klippfilm-betaling» (lager Stripe-økten og regner ut prisen).
    STRIPE_PK_LIVE = Stripe «Publishable key» (pk_live_…). Tom = betalingen er stengt på klippfilm.no.
    STRIPE_PK_TEST = testnøkkel; brukes på localhost og med ?stripetest=1.
-   PAY_VIPPS_URL = Vipps-betalingslenke når Vipps-avtalen er på plass. */
+   VIPPS_PA = true viser Vipps-knappen; betalingen lages av Workeren (/vipps/create) og bekreftes på takk.html. */
 var PAY_API='https://klippfilm-betaling.klippfilm-betaling.workers.dev';
 var STRIPE_PK_LIVE='pk_live_51UVT6VPToor81ZSyOTLw3K6FQmf7SetoKQ4vKQ6f7L0b8wObFU0P9bmQcjhrsQm8YW7PlIJk7ylo91LsiYqWXVG1000cxqRJs9';
 var STRIPE_PK_TEST='pk_test_51UVT6VPToor81ZSyFXAHDafnlsLkpB6udkKxbJMo8NpOzAHW0DS7asbM9ntq9pPDpJTbEtKdB5VfHphkoV9Bdb1z00krntmfFU';
@@ -236,7 +239,7 @@ var STRIPE_PK=(/^(localhost|127\.0\.0\.1)$/.test(location.hostname)||/[?&]stripe
 var PAY_CARD_URL='';  /* (eldre, én pris) */
 /* Stripe Payment Links per stykkpris og antall, nøkkel «stykkpris x antall», f.eks. {'99x1':'https://buy.stripe.com/…','109x2':'…'}. Brukes når siden ligger uten server (GitHub Pages). */
 var PAY_LINKS={};
-var PAY_VIPPS_URL='';
+var VIPPS_PA=true;
 
 var o=null;try{o=JSON.parse(sessionStorage.getItem('klipp_ordre')||'null');}catch(e){}
 /* ?demo=1 viser siden med en eksempelbestilling (for forhåndsvisning) */
@@ -273,7 +276,15 @@ if(!o){
   var first=(o.name||'').trim().split(/\s+/)[0];if(first)document.getElementById('hiName').textContent='Takk, '+first+'.';
   try{if(window.gtag)gtag('event','begin_checkout',{value:99,currency:'NOK',transaction_id:o.id});}catch(e){}
 
-  if(PAY_VIPPS_URL){var vb=document.getElementById('payVipps');vb.style.display='';vb.addEventListener('click',function(){location.href=PAY_VIPPS_URL;});}
+  if(VIPPS_PA){
+    var vb=document.getElementById('payVipps'),vbHtml=vb.innerHTML;vb.style.display='';document.getElementById('vippsOr').style.display='';
+    vb.addEventListener('click',function(){
+      vb.disabled=true;vb.textContent='Åpner Vipps …';
+      fetch(PAY_API+'/vipps/create',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(o)})
+        .then(function(r){return r.json();}).then(function(j){if(!j.redirectUrl)throw new Error('ingen betaling');location.href=j.redirectUrl;})
+        .catch(function(){vb.disabled=false;vb.innerHTML=vbHtml;alert('Vipps kunne ikke åpnes. Prøv igjen, eller betal med kort.');});
+    });
+  }
 
   if(STRIPE_PK){
     /* LIVE: Stripe Embedded Checkout */
