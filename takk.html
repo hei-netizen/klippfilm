@@ -1,51 +1,106 @@
 <!DOCTYPE html>
-<html lang="nb"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="robots" content="noindex, nofollow">
-<title>Takk for bestillingen · klipp</title><link rel="icon" type="image/svg+xml" href="brand/klipp-mark-v4.svg">
+<html lang="nb">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>Takk for bestillingen · klipp</title>
+<meta name="theme-color" content="#0B0B0C">
+<link rel="icon" type="image/svg+xml" href="brand/klipp-mark-v4.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<style>*{box-sizing:border-box;margin:0;padding:0}body{font-family:Figtree,system-ui,sans-serif;background:#FBFAF7;color:#141218;min-height:100vh;display:grid;place-items:center;padding:40px 24px;text-align:center}
-.mk{width:72px;margin:0 auto 26px}h1{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;letter-spacing:-0.04em;font-size:clamp(40px,7vw,72px);line-height:.98;margin-bottom:16px}
-.g{background:linear-gradient(95deg,#FF6B3D,#E5397F 52%,#6E4BFF);-webkit-background-clip:text;background-clip:text;color:transparent}
-p{color:#6B6775;font-size:18px;max-width:40ch;margin:0 auto}video{width:200px;border-radius:24px;margin:34px auto 0;box-shadow:0 30px 70px -30px rgba(20,18,24,.45)}a{display:inline-block;margin-top:28px;font-weight:700}
-/* ===== v2.1 «middelgrunn» (Jona): proff skrift (Schibsted Grotesk), ny logo, én rød aksent ===== */
-:root{--coral:#E4352B;--pink:#E4352B;--violet:#E4352B;--grad:linear-gradient(90deg,#E4352B,#E4352B);
-  --disp:'Schibsted Grotesk',system-ui,-apple-system,'Segoe UI',sans-serif;--body:'Schibsted Grotesk',system-ui,-apple-system,'Segoe UI',sans-serif;
-  --ink:#111111;--bg:#FAFAF8;--bg2:#F1F0EC}
-body{letter-spacing:-0.005em}
-h1,h2,h3{letter-spacing:-0.04em;font-weight:800}
-.g{background:none!important;-webkit-background-clip:border-box!important;background-clip:border-box!important;color:var(--coral)!important}
-.stage h1 .g{color:rgba(255,255,255,.6)!important}
-.logo{font-weight:800;letter-spacing:-0.055em}
-.logo .mk .bar,.mk .bar{transform-origin:7px 26px}
-.btn-hot{box-shadow:0 0 0 4px rgba(228,53,43,.14),0 14px 30px -14px rgba(228,53,43,.65)}
-.btn-hot:hover{box-shadow:0 0 0 6px rgba(228,53,43,.16),0 18px 36px -14px rgba(228,53,43,.7)}
-.opt.on{background:#FDF0EE!important}
-.bx.warm,.bx.lilac{background:var(--bg2)!important;border-color:rgba(17,17,17,.08)!important}
-.pricebox::before{background:radial-gradient(closest-side,rgba(228,53,43,.38),rgba(228,53,43,.08) 55%,transparent)!important}
-.pricebox .incl span svg{stroke:#FF6A5E}
-.marq .tr span::after{background:var(--coral)}
-.swatches i:nth-child(4){background:#E4352B}
-.eyebrow::before{background:var(--coral)}
-.mu{color:#9C9AA2}
-body,h1,h2,h3,.logo,button,input,textarea{font-family:'Schibsted Grotesk',system-ui,-apple-system,'Segoe UI',sans-serif}
-</style></head>
-<body><div><img class="mk" src="brand/klipp-mark-v4.svg" alt="klipp"><h1 id="tt">Takk! <span class="g">Filmen er på vei.</span></h1>
-<p>Betalingen er mottatt. Vi lager filmen ut fra det du skrev og nettsiden din, og sender den i en Drive-lenke på e-post.</p><p id="oid" style="font-size:14px;margin-top:10px"></p>
-<video src="video/vy.mp4" poster="img/vy-poster.jpg" autoplay muted loop playsinline></video><a href="index.html">&larr; Tilbake</a></div>
+<style>
+:root{--bg:#0B0B0C;--w:#F5F4F0;--w2:rgba(245,244,240,.72);--w3:rgba(245,244,240,.45);--w4:rgba(245,244,240,.12);--red:#E4352B}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Schibsted Grotesk',system-ui,-apple-system,sans-serif;background:var(--bg);color:var(--w);min-height:100vh;min-height:100svh;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+body::before{content:'';position:fixed;inset:0;pointer-events:none;background:radial-gradient(60% 50% at 50% 0%,rgba(228,53,43,.16),transparent 70%)}
+a{color:inherit;text-decoration:none}
+.top{display:flex;align-items:center;justify-content:space-between;max-width:1120px;margin:0 auto;padding:22px 24px;position:relative}
+.logo{display:flex;align-items:center;gap:10px;font-weight:800;font-size:24px;letter-spacing:-0.05em}
+.logo svg{width:30px;height:30px}
+.wrap{position:relative;max-width:1120px;margin:0 auto;padding:30px 24px 70px;display:grid;grid-template-columns:1.15fr .85fr;gap:64px;align-items:center}
+@media(max-width:860px){.wrap{grid-template-columns:1fr;gap:40px;padding-top:10px;text-align:left}}
+.ok{display:inline-flex;align-items:center;gap:10px;border:1px solid var(--w4);background:rgba(245,244,240,.04);border-radius:999px;padding:8px 14px 8px 8px;font-weight:600;font-size:14px;color:var(--w2);margin-bottom:28px}
+.ok i{width:24px;height:24px;border-radius:50%;background:#29a35a;display:flex;align-items:center;justify-content:center}
+.ok i svg{width:13px;height:13px;stroke:#fff}
+h1{font-weight:800;letter-spacing:-0.045em;line-height:.95;font-size:clamp(46px,7vw,92px)}
+h1 .r{color:var(--red)}
+.lede{color:var(--w2);font-size:19px;line-height:1.55;max-width:44ch;margin-top:22px}
+.oid{color:var(--w3);font-size:14px;margin-top:12px;letter-spacing:.02em}
+.steps{list-style:none;margin:36px 0 38px;border-top:1px solid var(--w4)}
+.steps li{display:grid;grid-template-columns:36px 1fr;gap:14px;align-items:center;padding:16px 0;border-bottom:1px solid var(--w4)}
+.steps .d{width:28px;height:28px;border-radius:50%;border:1.5px solid var(--w4);display:flex;align-items:center;justify-content:center;font-size:12.5px;font-weight:700;color:var(--w3)}
+.steps .done .d{background:#29a35a;border-color:#29a35a;color:#fff}
+.steps .now .d{border-color:var(--red);color:var(--red);box-shadow:0 0 0 4px rgba(228,53,43,.18)}
+.steps b{font-weight:600;font-size:17px;letter-spacing:-0.01em}
+.steps span.t{display:block;color:var(--w3);font-size:14px;margin-top:2px}
+.ctas{display:flex;gap:10px;flex-wrap:wrap}
+.btn{display:inline-flex;align-items:center;gap:12px;border-radius:999px;padding:7px 7px 7px 24px;font-weight:600;font-size:16px;letter-spacing:-0.01em;transition:transform .25s cubic-bezier(.2,.7,.2,1);white-space:nowrap}
+.btn .ar{width:42px;height:42px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;transition:transform .3s}
+.btn .ar svg{width:16px;height:16px}
+.btn:hover{transform:translateY(-2px)}
+.btn-w{background:var(--w);color:#111}.btn-w .ar{background:var(--red);color:#fff}
+.btn-w:hover .ar{transform:translateX(-3px)}
+.btn-o{border:1px solid var(--w4);color:var(--w);padding:17px 24px}
+.btn-o:hover{border-color:var(--w3)}
+@media(max-width:520px){.ctas .btn{width:100%;justify-content:space-between}.ctas .btn-o{justify-content:center}}
+.film{justify-self:center;width:min(320px,80vw)}
+.film .frame{position:relative;border-radius:22px;overflow:hidden;background:#000;box-shadow:0 50px 100px -40px rgba(0,0,0,.9),0 0 0 1px rgba(255,255,255,.08)}
+.film video{width:100%;aspect-ratio:9/16;object-fit:cover;display:block}
+.film .pill{position:absolute;left:12px;top:12px;display:inline-flex;align-items:center;gap:7px;border-radius:999px;padding:5px 11px;background:rgba(11,11,12,.55);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,.14);font-size:12px;font-weight:600}
+.film .pill i{width:6px;height:6px;border-radius:50%;background:var(--red)}
+.film p{color:var(--w3);font-size:13px;text-align:center;margin-top:12px}
+.rise{opacity:0;transform:translateY(24px);animation:rise .9s cubic-bezier(.2,.7,.2,1) forwards}
+.r2{animation-delay:.1s}.r3{animation-delay:.2s}.r4{animation-delay:.3s}
+@keyframes rise{to{opacity:1;transform:none}}
+@media(prefers-reduced-motion:reduce){.rise{opacity:1;transform:none;animation:none}}
+</style>
+</head>
+<body>
+<header class="top">
+  <a href="index.html" class="logo" aria-label="klipp – til forsiden"><svg viewBox="0 0 64 64" aria-hidden="true"><g transform="rotate(-14 7 26)"><rect x="7" y="13" width="51" height="10.5" rx="2.5" fill="#F5F4F0"/></g><rect x="7" y="28" width="51" height="30" rx="5" fill="#F5F4F0"/><circle cx="45.5" cy="43" r="5.2" fill="#E4352B"/></svg>klipp</a>
+</header>
+
+<main class="wrap">
+  <section>
+    <span class="ok rise" id="okPill"><i><svg viewBox="0 0 24 24" fill="none" stroke-width="3.2"><path d="M20 6L9 17l-5-5" stroke-linecap="round" stroke-linejoin="round"/></svg></i><span id="okTxt">Betaling mottatt</span></span>
+    <h1 class="rise r2" id="tt">Takk! <span class="r">Filmen er på vei.</span></h1>
+    <p class="lede rise r3" id="lede">Vi lager filmen ut fra det du skrev og nettsiden din, og sender den i en Drive-lenke på e-post. Forvent filmen innen 6 til 12 timer.</p>
+    <p class="oid rise r3" id="oid"></p>
+    <ol class="steps rise r3">
+      <li class="done"><span class="d">✓</span><span><b>Bestilling og betaling</b><span class="t">Kvittering er sendt på e-post</span></span></li>
+      <li class="now"><span class="d">2</span><span><b>Vi lager filmen</b><span class="t">I 3D, ut fra nettsiden din og ønsket ditt. Ferdig innen 6 til 12 timer</span></span></li>
+      <li><span class="d">3</span><span><b>Drive-lenke på e-post</b><span class="t">Last ned og bruk den der du vil</span></span></li>
+    </ol>
+    <div class="ctas rise r4">
+      <a href="index.html" class="btn btn-w"><span class="ar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M19 12H5M11 6l-6 6 6 6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>Tilbake til hovedsiden&nbsp;</a>
+      <a href="index.html#filmer" class="btn btn-o">Se filmene våre</a>
+    </div>
+  </section>
+  <aside class="film rise r3">
+    <div class="frame"><video src="video/vy.mp4" poster="img/vy-poster.jpg" autoplay muted loop playsinline></video><span class="pill"><i></i>Hardangervidda</span></div>
+    <p>Spec-film: ikke bestilt eller godkjent av Vy</p>
+  </aside>
+</main>
+
 <script>
 (function(){
-  var tt=document.getElementById('tt'),p=document.querySelector('p'),oid=document.getElementById('oid');
-  var n='';try{n=(sessionStorage.getItem('klipp_navn')||'').trim().split(/\s+/)[0];var o=JSON.parse(sessionStorage.getItem('klipp_ordre')||'null');if(o&&o.id)oid.textContent='Ordrenummer '+o.id;}catch(e){}
+  var tt=document.getElementById('tt'),lede=document.getElementById('lede'),oid=document.getElementById('oid'),okTxt=document.getElementById('okTxt');
+  var n='',o=null;try{n=(sessionStorage.getItem('klipp_navn')||'').trim().split(/\s+/)[0];o=JSON.parse(sessionStorage.getItem('klipp_ordre')||'null');}catch(e){}
+  if(o&&o.id)oid.textContent='Ordrenummer '+o.id+(o.formater?' · '+o.formater:'');
   var hi=n?('Takk, '+n+'! '):'Takk! ';
+  tt.innerHTML=hi+'<span class="r">Filmen er på vei.</span>';
   var sid=new URLSearchParams(location.search).get('session_id');
   if(sid){
-    /* LIVE: sjekk betalingen hos Stripe */
-    tt.innerHTML='Sjekker <span class="g">betalingen …</span>';
-    fetch('/api/session-status.php?session_id='+encodeURIComponent(sid)).then(function(r){return r.json();}).then(function(j){
-      if(j.betalt){tt.innerHTML=hi+'<span class="g">Filmen er på vei.</span>';if(j.ordre)oid.textContent='Ordrenummer '+j.ordre;try{if(window.gtag)gtag('event','purchase',{value:99,currency:'NOK',transaction_id:j.ordre});}catch(e){}}
-      else{tt.innerHTML='Betalingen ble <span class="g">ikke fullført.</span>';p.innerHTML='Ingenting er trukket. <a href="betaling.html">Prøv igjen</a>.';}
-    }).catch(function(){tt.innerHTML=hi+'<span class="g">Vi sjekker betalingen.</span>';p.textContent='Du får kvittering på e-post så snart betalingen er bekreftet.';});
-  }else{
-    tt.innerHTML=hi+'<span class="g">Filmen er på vei.</span>';
+    /* innebygd Stripe (PHP-varianten): bekreft betalingen hos Stripe */
+    okTxt.textContent='Sjekker betalingen …';
+    fetch('api/session-status.php?session_id='+encodeURIComponent(sid)).then(function(r){return r.json();}).then(function(j){
+      if(j.betalt){okTxt.textContent='Betaling mottatt';if(j.ordre)oid.textContent='Ordrenummer '+j.ordre;}
+      else{okTxt.textContent='Betalingen ble ikke fullført';tt.innerHTML='Betalingen ble <span class="r">ikke fullført.</span>';lede.innerHTML='Ingenting er trukket. <a href="betaling.html" style="text-decoration:underline">Prøv igjen</a>.';}
+    }).catch(function(){okTxt.textContent='Vi bekrefter betalingen';});
   }
 })();
-</script></body></html>
+</script>
+</body>
+</html>

@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="robots" content="noindex, nofollow">
 <title>klipp · 3D-reklamefilm for bedriften din, 99 kr</title>
-<meta name="description" content="Fortell oss kort hva du vil vise og legg inn nettsiden din. Vi lager en 3D-reklamefilm for bedriften din og sender den i en Drive-lenke. 99 kr per film.">
+<meta name="description" content="Fortell oss kort hva du vil vise og legg inn nettsiden din. Vi lager en 3D-reklamefilm for bedriften din og sender den i en Drive-lenke. Fra 99 kr per film.">
 <meta name="theme-color" content="#FBFAF7">
 <link rel="icon" type="image/svg+xml" href="brand/klipp-mark-v4.svg">
 <!-- ============================================================
@@ -417,6 +417,31 @@ body,h1,h2,h3,.logo,button,input,textarea{font-family:'Schibsted Grotesk',system
 }
 @media(prefers-reduced-motion:reduce){.rise{opacity:1;transform:none;animation:none}.hx-bg img{animation:none}}
 .introP{color:rgba(255,255,255,.62);font-size:15px;margin-top:10px}
+
+/* formatvalg */
+.fmts .opt{position:relative}
+.fmts .opt.on::after{content:'';position:absolute;right:10px;top:10px;width:18px;height:18px;border-radius:50%;background:var(--coral) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23fff' stroke-width='3.5'%3E%3Cpath d='M20 6L9 17l-5-5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center/11px no-repeat}
+.fmtsum{display:flex;justify-content:space-between;align-items:baseline;margin:14px 2px 4px;font-weight:600;font-size:14.5px;color:var(--ink2)}
+.fmtsum b{font-family:var(--disp);font-size:22px;font-weight:800;letter-spacing:-0.03em;color:var(--ink)}
+.fmtnote{font-size:12.5px;color:var(--muted);margin:0 2px 12px}
+.fmtnext{width:100%;justify-content:center}
+
+/* pakker */
+.pakker{grid-template-columns:1fr!important}
+.pk3{display:grid!important;grid-template-columns:auto 1fr auto;align-items:center}
+.pk3 .ic b{font-family:var(--disp);font-weight:800;font-size:13px;letter-spacing:-0.02em}
+.pk3 em{font-style:normal;font-family:var(--disp);font-weight:800;font-size:17px;letter-spacing:-0.02em}
+.pk3.on em{color:var(--coral)}
+.tiers{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:26px auto 18px;max-width:900px;text-align:left}
+.tier{position:relative;border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.04);border-radius:20px;padding:24px 22px 22px}
+.tier.hot{border-color:rgba(228,53,43,.7);background:rgba(228,53,43,.08)}
+.tier .badge{position:absolute;top:-11px;left:22px;background:#E4352B;color:#fff;font-size:11.5px;font-weight:700;letter-spacing:.04em;padding:4px 10px;border-radius:999px}
+.tier .nm{display:block;font-family:var(--disp);font-weight:800;font-size:20px;letter-spacing:-0.02em}
+.tier .len{display:block;color:rgba(255,255,255,.62);font-size:14px;margin-top:2px}
+.tier .amt{font-size:clamp(56px,7vw,84px)!important;margin:14px 0 6px!important;line-height:.9!important}
+.tier .amt span{font-size:.36em!important}
+.tier .fit{display:block;color:rgba(255,255,255,.55);font-size:13.5px}
+@media(max-width:760px){.tiers{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
@@ -443,14 +468,14 @@ body,h1,h2,h3,.logo,button,input,textarea{font-family:'Schibsted Grotesk',system
     <video id="mVid" src="video/equinor-hd.mp4" poster="img/equinor-poster.jpg" muted playsinline preload="metadata"></video>
   </div>
   <div class="wrap hx-in">
-    <div class="hx-meta mono"><span>Motion graphics<br>Lite team i Norge</span><span class="r">Introduksjonspris<br>99,- per film</span></div>
+    <div class="hx-meta mono"><span>Motion graphics<br>Lite team i Norge</span><span class="r">Introduksjonspris<br>Fra 99,- per film</span></div>
     <div class="hx-grid">
       <div class="hx-txt">
-        <span class="hx-badge mono rise"><i></i>Introduksjonspris 99,-</span>
+        <span class="hx-badge mono rise"><i></i>Introduksjonspris fra 99,-</span>
         <h1 class="hx-h1"><span class="rise r2">Din bedrift</span><span class="l2 rise r3"><svg class="hmk" viewBox="0 0 64 64" aria-hidden="true"><g class="bar"><g transform="rotate(-14 7 26)"><rect x="7" y="13" width="51" height="10.5" rx="2.5" fill="#F5F4F0"/></g></g><rect x="7" y="28" width="51" height="30" rx="5" fill="#F5F4F0"/><circle cx="45.5" cy="43" r="5.2" fill="#E4352B"/></svg>i 3D.</span></h1>
         <p class="hx-story rise r4">Vi er et lite team i Norge som bare lager motion graphics. Akkurat nå bygger vi porteføljen vår. Derfor får du en film for bedriften din, i stilen du vil ha, for prisen av en lunsj.</p>
         <div class="hx-ctas rise r4">
-          <a href="#bestill" class="hbtn hbtn-w">Bestill film for 99,-<span class="ar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M5 12h14M13 6l6 6-6 6" stroke-linecap="round" stroke-linejoin="round"/></svg></span></a>
+          <a href="#bestill" class="hbtn hbtn-w">Bestill film fra 99,-<span class="ar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M5 12h14M13 6l6 6-6 6" stroke-linecap="round" stroke-linejoin="round"/></svg></span></a>
           <a href="#filmer" class="hbtn hbtn-o">Se filmene</a>
         </div>
         <div class="mpick" id="mPick"></div>
@@ -485,11 +510,20 @@ body,h1,h2,h3,.logo,button,input,textarea{font-family:'Schibsted Grotesk',system
 
     <div class="card fcard rv d1">
       <div class="top"><b>Bestill filmen din</b><span class="price-tag">99 kr <small>per film</small></span></div>
-      <div class="prog"><span id="stepTxt">1 av 3</span><span class="bar"><i id="stepBar"></i></span></div>
+      <div class="prog"><span id="stepTxt">1 av 4</span><span class="bar"><i id="stepBar"></i></span></div>
       <form id="leadForm" novalidate>
         <input class="hp" type="text" name="company" tabindex="-1" autocomplete="off" aria-hidden="true">
         <input type="hidden" name="tema"><input type="hidden" name="kanal">
-        <div class="step on" data-step="1">
+        <div class="step on" data-step="0">
+          <h3>Hvor lang skal filmen være?</h3>
+          <input type="hidden" name="pakke">
+          <div class="opts pakker" data-name="pakke">
+            <button type="button" class="opt pk3" data-v="Kort" data-pris="99"><span class="ic"><b>20s</b></span><span>Kort<small>Rundt 20 sekunder</small></span><em>99 kr</em></button>
+            <button type="button" class="opt pk3" data-v="Medium" data-pris="199"><span class="ic"><b>60s</b></span><span>Medium<small>Opptil 60 sekunder</small></span><em>199 kr</em></button>
+            <button type="button" class="opt pk3" data-v="Lang" data-pris="299"><span class="ic"><b>5m</b></span><span>Lang<small>Opptil 5 minutter</small></span><em>299 kr</em></button>
+          </div>
+        </div>
+        <div class="step" data-step="1">
           <h3>Hva skal filmen vise?</h3>
           <div class="opts" data-name="tema">
             <button type="button" class="opt" data-v="Et produkt"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M12 3l8 4.5v9L12 21l-8-4.5v-9L12 3z" stroke-linejoin="round"/><path d="M12 12l8-4.5M12 12v9M12 12L4 7.5" stroke-linejoin="round"/></svg></span><span>Et produkt</span></button>
@@ -499,13 +533,17 @@ body,h1,h2,h3,.logo,button,input,textarea{font-family:'Schibsted Grotesk',system
           </div>
         </div>
         <div class="step" data-step="2">
-          <h3>Hvor skal den vises?</h3>
-          <div class="opts" data-name="kanal">
-            <button type="button" class="opt" data-v="Instagram og TikTok"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><rect x="7" y="2.5" width="10" height="19" rx="2.5"/><path d="M11 18.5h2" stroke-linecap="round"/></svg></span><span>Instagram<small>og TikTok</small></span></button>
-            <button type="button" class="opt" data-v="Facebook"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><rect x="3" y="3" width="18" height="18" rx="5"/><path d="M13.5 21v-7h3l.5-3h-3.5V9.5c0-1 .4-1.5 1.5-1.5H17V5.3a14 14 0 0 0-2.2-.2c-2.2 0-3.3 1.3-3.3 3.6V11H9v3h2.5v7" stroke-linejoin="round"/></svg></span><span>Facebook</span></button>
-            <button type="button" class="opt" data-v="Nettsiden"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.6 3.8 5.6 3.8 9s-1.3 6.4-3.8 9c-2.5-2.6-3.8-5.6-3.8-9S9.5 5.6 12 3z" stroke-linejoin="round"/></svg></span><span>Nettsiden</span></button>
-            <button type="button" class="opt" data-v="Vet ikke ennå"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.6.3-1 .8-1 1.5v.7M12 17v.01" stroke-linecap="round"/></svg></span><span>Vet ikke ennå</span></button>
+          <h3>Hvilke formater vil du ha?</h3>
+          <input type="hidden" name="formater">
+          <div class="opts fmts">
+            <button type="button" class="opt fmt on" data-v="Stående 9:16"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><rect x="7.0" y="3.0" width="10" height="18" rx="2"/></svg></span><span>Stående 9:16<small>Reels, TikTok, Stories</small></span></button>
+            <button type="button" class="opt fmt" data-v="Kvadrat 1:1"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><rect x="4.5" y="4.5" width="15" height="15" rx="2"/></svg></span><span>Kvadrat 1:1<small>Feed</small></span></button>
+            <button type="button" class="opt fmt" data-v="Portrett 4:5"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><rect x="5.5" y="4.0" width="13" height="16" rx="2"/></svg></span><span>Portrett 4:5<small>Instagram og Facebook</small></span></button>
+            <button type="button" class="opt fmt" data-v="Liggende 16:9"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><rect x="2.5" y="6.5" width="19" height="11" rx="2"/></svg></span><span>Liggende 16:9<small>YouTube og nettside</small></span></button>
           </div>
+          <div class="fmtsum"><span id="fmtTxt">1 format inkludert</span><b id="fmtSum">99 kr</b></div>
+          <p class="fmtnote">Første format er med i prisen. Hvert ekstra format koster 10 kr.</p>
+          <button type="button" class="btn btn-ink fmtnext" id="fmtNext">Neste<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M5 12h14M13 6l6 6-6 6" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
           <button type="button" class="back" data-back>&larr; Tilbake</button>
         </div>
         <div class="step" data-step="3">
@@ -515,11 +553,11 @@ body,h1,h2,h3,.logo,button,input,textarea{font-family:'Schibsted Grotesk',system
           <div class="fld"><label for="f-navn">Navn</label><input id="f-navn" type="text" name="name" placeholder="Fornavn og etternavn" autocomplete="name" required></div>
           <div class="fld"><label for="f-epost">E-post</label><input id="f-epost" type="email" name="email" placeholder="Hit sender vi Drive-lenken" autocomplete="email" required></div>
           <div class="ferr" id="formErr">Fyll inn feltene over, så er du ferdig.</div>
-          <button type="submit" class="btn btn-hot">Bestill film for 99 kr<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M5 12h14M13 6l6 6-6 6" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+          <button type="submit" class="btn btn-hot"><span id="submitTxt">Bestill film for 99 kr</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M5 12h14M13 6l6 6-6 6" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
           <button type="button" class="back" data-back>&larr; Tilbake</button>
         </div>
       </form>
-      <p class="fine">Neste steg er betaling. Filmen kommer som en Drive-lenke på e-post.</p>
+      <p class="fine">Neste steg er betaling. Filmen kommer som en Drive-lenke på e-post innen 6 til 12 timer.</p>
     </div>
   </div>
 </section>
@@ -561,12 +599,12 @@ body,h1,h2,h3,.logo,button,input,textarea{font-family:'Schibsted Grotesk',system
       <h2 class="h2" style="margin:12px 0 16px">Levert som en <span class="mu">ekte reklamefilm.</span></h2>
       <p class="lede">Samme tekniske standard som filmene over. Klar til å lastes opp, uten at du trenger å redigere noe.</p>
       <dl class="sheet">
-        <div><dt>Format</dt><dd>Stående 9:16, 1080 × 1920</dd></div>
+        <div><dt>Format</dt><dd>Stående 9:16 inkludert. 1:1, 4:5 og 16:9 for 10 kr per ekstra format</dd></div>
         <div><dt>Bildefrekvens</dt><dd>30 bilder i sekundet</dd></div>
-        <div><dt>Lengde</dt><dd>Rundt 20 sekunder</dd></div>
+        <div><dt>Lengde</dt><dd>20 sekunder, 60 sekunder eller opptil 5 minutter</dd></div>
         <div><dt>Lyd</dt><dd>Lyddesign og musikk, ferdig mikset</dd></div>
         <div><dt>Avslutning</dt><dd>Logoen din, bygget i 3D</dd></div>
-        <div><dt>Fil</dt><dd>MP4 (H.264), levert i Google Drive</dd></div>
+        <div><dt>Levering</dt><dd>MP4 i Google Drive, innen 6 til 12 timer</dd></div>
       </dl>
     </div>
   </div>
@@ -589,7 +627,7 @@ body,h1,h2,h3,.logo,button,input,textarea{font-family:'Schibsted Grotesk',system
       </div>
       <div class="sc rv d2">
         <div class="viz"><div class="file"><span class="th"><img src="img/vy-poster.jpg" alt=""></span><span><b>film_dinbedrift.mp4</b><small>Google Drive · 9:16</small></span><span class="ok"><svg viewBox="0 0 24 24" fill="none" stroke-width="3"><path d="M20 6L9 17l-5-5" stroke-linecap="round" stroke-linejoin="round"/></svg></span></div></div>
-        <span class="num">03</span><h3>Filmen kommer i Drive</h3><p>Ferdig 3D-film med lyd, klar til å lastes opp der du vil.</p>
+        <span class="num">03</span><h3>Filmen kommer i Drive</h3><p>Ferdig 3D-film med lyd innen 6 til 12 timer, klar til å lastes opp der du vil.</p>
       </div>
     </div>
   </div>
@@ -633,9 +671,13 @@ body,h1,h2,h3,.logo,button,input,textarea{font-family:'Schibsted Grotesk',system
   <div class="wrap">
     <div class="pricebox rv">
       <span class="eyebrow">Pris</span>
-      <div class="amt">99<span>kr</span></div>
-      <div class="per">per film</div>
-      <p class="introP">Introduksjonspris mens vi bygger porteføljen vår.</p>
+      <div class="tiers">
+        <div class="tier"><span class="nm">Kort</span><span class="len">Rundt 20 sekunder</span><div class="amt">99<span>kr</span></div><span class="fit">Reels, TikTok og Stories</span></div>
+        <div class="tier hot"><span class="badge">Anbefalt</span><span class="nm">Medium</span><span class="len">Opptil 60 sekunder</span><div class="amt">199<span>kr</span></div><span class="fit">Annonser og forklaringer</span></div>
+        <div class="tier"><span class="nm">Lang</span><span class="len">Opptil 5 minutter</span><div class="amt">299<span>kr</span></div><span class="fit">Presentasjon og nettside</span></div>
+      </div>
+      <div class="per">+ 10 kr per ekstra format</div>
+      <p class="introP">Introduksjonspriser mens vi bygger porteføljen vår.</p>
       <div class="incl">
         <span><svg viewBox="0 0 24 24" fill="none" stroke-width="3"><path d="M20 6L9 17l-5-5" stroke-linecap="round" stroke-linejoin="round"/></svg>Ferdig 3D-film</span>
         <span><svg viewBox="0 0 24 24" fill="none" stroke-width="3"><path d="M20 6L9 17l-5-5" stroke-linecap="round" stroke-linejoin="round"/></svg>Stående 9:16</span>
@@ -654,6 +696,9 @@ body,h1,h2,h3,.logo,button,input,textarea{font-family:'Schibsted Grotesk',system
     <div class="rv"><span class="eyebrow">Greit å vite</span><h2 class="h2" style="margin-top:12px">Spørsmål <span class="mu">og svar.</span></h2></div>
     <div class="faq rv d1">
       <details><summary>Hvorfor bare 99 kr?<span class="pm">+</span></summary><div class="ans">Vi er et lite team i Norge som bare lager motion graphics, og akkurat nå bygger vi porteføljen vår. Derfor lager vi filmer for prisen av en lunsj, så flere bedrifter får se hva vi kan.</div></details>
+      <details><summary>Hvor lang kan filmen være?<span class="pm">+</span></summary><div class="ans">Kort er rundt 20 sekunder og koster 99 kr. Medium er opptil 60 sekunder og koster 199 kr. Lang er opptil 5 minutter og koster 299 kr. Ekstra formater koster 10 kr per stykk.</div></details>
+      <details><summary>Hvor raskt får jeg filmen?<span class="pm">+</span></summary><div class="ans">Forvent filmen innen 6 til 12 timer etter at du har betalt. Den kommer som en Drive-lenke på e-post.</div></details>
+      <details><summary>Kan jeg få filmen i flere formater?<span class="pm">+</span></summary><div class="ans">Ja. Stående 9:16 er med i prisen. Du kan legge til kvadrat 1:1, portrett 4:5 og liggende 16:9 for 10 kr per ekstra format. Du velger formatene når du bestiller.</div></details>
       <details><summary>Hva får jeg for 99 kr?<span class="pm">+</span></summary><div class="ans">En ferdig 3D-reklamefilm i stående format med lyd, laget for bedriften din. Du får den som en Drive-lenke på e-post og kan laste den ned og bruke den der du vil.</div></details>
       <details><summary>Hva trenger dere fra meg?<span class="pm">+</span></summary><div class="ans">Et par setninger om hva filmen skal vise, og adressen til nettsiden din. Logo, farger og det dere er kjent for henter vi derfra.</div></details>
       <details><summary>Må jeg filme noe selv?<span class="pm">+</span></summary><div class="ans">Nei. Filmene bygges i 3D, så vi trenger verken kamera, studio eller bilder fra deg.</div></details>
@@ -676,7 +721,7 @@ body,h1,h2,h3,.logo,button,input,textarea{font-family:'Schibsted Grotesk',system
     <div class="row">
       <div>
         <a href="#top" class="logo"><svg class="mk" viewBox="0 0 64 64" aria-hidden="true" style="width:34px;height:34px"><g class="bar"><g transform="rotate(-14 7 26)"><rect x="7" y="13" width="51" height="10.5" rx="2.5" fill="#F5F4F0"/></g></g><rect x="7" y="28" width="51" height="30" rx="5" fill="#F5F4F0"/><circle cx="45.5" cy="43" r="5.2" fill="#E4352B"/></svg>klipp</a>
-        <p class="tag">3D-reklamefilm for norske bedrifter. 99 kr per film.</p>
+        <p class="tag">3D-reklamefilm for norske bedrifter. Fra 99 kr per film.</p>
       </div>
       <div class="cols">
         <div><b>klipp</b><a href="#filmer">Filmer</a><a href="#slik">Slik funker det</a><a href="#pris">Pris</a></div>
@@ -738,8 +783,23 @@ var started=false,o=new IntersectionObserver(function(es){if(es[0].isIntersectin
 (function(){
   var f=document.getElementById('leadForm');if(!f)return;
   var steps=[].slice.call(f.querySelectorAll('.step')),cur=0;
-  function show(i){cur=i;steps.forEach(function(s,k){s.classList.toggle('on',k===i);});document.getElementById('stepTxt').textContent=(i+1)+' av 3';document.getElementById('stepBar').style.width=((i+1)/3*100)+'%';}
-  f.querySelectorAll('.opts').forEach(function(g){g.querySelectorAll('.opt').forEach(function(o){o.addEventListener('click',function(){g.querySelectorAll('.opt').forEach(function(x){x.classList.remove('on');});o.classList.add('on');f[g.getAttribute('data-name')].value=o.getAttribute('data-v');setTimeout(function(){show(Math.min(cur+1,2));},240);});});});
+  function show(i){cur=i;steps.forEach(function(s,k){s.classList.toggle('on',k===i);});document.getElementById('stepTxt').textContent=(i+1)+' av 4';document.getElementById('stepBar').style.width=((i+1)/4*100)+'%';}
+  f.querySelectorAll('.opts:not(.fmts)').forEach(function(g){g.querySelectorAll('.opt').forEach(function(o){o.addEventListener('click',function(){g.querySelectorAll('.opt').forEach(function(x){x.classList.remove('on');});o.classList.add('on');f[g.getAttribute('data-name')].value=o.getAttribute('data-v');if(g.getAttribute('data-name')==='pakke'&&typeof updPrice==='function')updPrice();setTimeout(function(){show(Math.min(cur+1,3));},240);});});});
+  /* formatvalg: 9:16 er med, +10 kr per ekstra format */
+  var BASE=99,EXTRA=10;
+  var updPrice;
+  function fmts(){return [].slice.call(f.querySelectorAll('.opt.fmt.on')).map(function(b){return b.getAttribute('data-v');});}
+  var PAKKE={Kort:99,Medium:199,Lang:299};
+  function price(){return (PAKKE[f.pakke.value]||BASE)+EXTRA*Math.max(0,fmts().length-1);}
+  updPrice=function(){var n=fmts().length,p=price();f.formater.value=fmts().join(', ');
+    document.getElementById('fmtTxt').textContent=n<=1?'1 format inkludert':n+' formater (1 inkludert + '+(n-1)+' × 10 kr)';
+    document.getElementById('fmtSum').textContent=p+' kr';
+    document.querySelectorAll('.price-tag').forEach(function(t){t.innerHTML=p+' kr <small>'+(n>1?n+' formater':'per film')+'</small>';});
+    var sb=document.getElementById('submitTxt');if(sb)sb.textContent='Bestill film for '+p+' kr';
+    document.getElementById('fmtNext').disabled=n===0;document.getElementById('fmtNext').style.opacity=n===0?.4:1;};
+  f.querySelectorAll('.opt.fmt').forEach(function(b){b.addEventListener('click',function(){b.classList.toggle('on');updPrice();});});
+  document.getElementById('fmtNext').addEventListener('click',function(){if(fmts().length)show(3);});
+  updPrice();
   f.querySelectorAll('[data-back]').forEach(function(b){b.addEventListener('click',function(){show(Math.max(0,cur-1));});});
   /* nettadresse fra slutt-feltet fylles inn i skjemaet */
   document.getElementById('urlForm').addEventListener('submit',function(e){e.preventDefault();var u=document.getElementById('urlIn').value.trim();if(u)f.website.value=u;scrollToEl(document.getElementById('bestill'));});
@@ -751,13 +811,13 @@ var started=false,o=new IntersectionObserver(function(es){if(es[0].isIntersectin
     var err=document.getElementById('formErr');
     if(!val('beskrivelse')||!val('website')||!val('name')||!/^\S+@\S+\.\S+$/.test(val('email'))){err.style.display='block';return;}
     err.style.display='none';
-    var p={subject:'Ny bestilling: klipp 3D-film for 99 kr',lead_source:LEAD_SOURCE,name:val('name'),email:val('email'),website:val('website'),
+    var p={subject:'Ny bestilling: klipp 3D-film for '+price()+' kr',pakke:val('pakke')||'Kort',formater:val('formater'),pris:price(),lead_source:LEAD_SOURCE,name:val('name'),email:val('email'),website:val('website'),
       tema:val('tema'),kanal:val('kanal'),beskrivelse:val('beskrivelse'),
-      comment:['[klipp 3D-film 99 kr]','Viser: '+(val('tema')||'-')+' | Vises på: '+(val('kanal')||'-'),'Ønske: '+val('beskrivelse')].join('\n'),
+      comment:['[klipp 3D-film 99 kr]','Pakke: '+(val('pakke')||'Kort')+' | Viser: '+(val('tema')||'-')+' | Formater: '+(val('formater')||'-')+' ('+price()+' kr)','Ønske: '+val('beskrivelse')].join('\n'),
       page_url:location.href,user_agent:navigator.userAgent,ordre:'KL-'+Date.now().toString(36).toUpperCase().slice(-6)};
     postTo(LEAD_WEBHOOK,p);
     try{var a=JSON.parse(localStorage.getItem('klipp_bestillinger')||'[]');a.push(p);localStorage.setItem('klipp_bestillinger',JSON.stringify(a.slice(-20)));}catch(x){}
-    try{sessionStorage.setItem('klipp_navn',val('name'));sessionStorage.setItem('klipp_ordre',JSON.stringify({id:p.ordre,name:p.name,email:p.email,website:p.website,tema:p.tema,kanal:p.kanal,beskrivelse:p.beskrivelse}));}catch(x){}
+    try{sessionStorage.setItem('klipp_navn',val('name'));sessionStorage.setItem('klipp_ordre',JSON.stringify({pakke:p.pakke,formater:p.formater,pris:p.pris,id:p.ordre,name:p.name,email:p.email,website:p.website,tema:p.tema,kanal:p.kanal,beskrivelse:p.beskrivelse}));}catch(x){}
     setTimeout(function(){location.href='betaling.html';},300);
   });
 })();
