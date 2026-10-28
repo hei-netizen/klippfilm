@@ -113,7 +113,7 @@ h1 .r{color:var(--red)}
     /* innebygd Stripe: bekreft betalingen hos Stripe via Cloudflare Worker «klippfilm-betaling» */
     okTxt.textContent='Sjekker betalingen …';
     fetch('https://klippfilm-betaling.klippfilm-betaling.workers.dev/session-status?session_id='+encodeURIComponent(sid)).then(function(r){return r.json();}).then(function(j){
-      if(j.betalt){okTxt.textContent='Betaling mottatt';if(j.ordre)oid.textContent='Ordrenummer '+j.ordre;}
+      if(j.betalt){okTxt.textContent=j.refundert?'Betaling mottatt og refundert (test)':'Betaling mottatt';if(j.ordre)oid.textContent='Ordrenummer '+j.ordre;}
       else{okTxt.textContent='Betalingen ble ikke fullført';tt.innerHTML='Betalingen ble <span class="r">ikke fullført.</span>';lede.innerHTML='Ingenting er trukket. <a href="betaling.html" style="text-decoration:underline">Prøv igjen</a>.';}
     }).catch(function(){okTxt.textContent='Vi bekrefter betalingen';});
   }
@@ -123,7 +123,7 @@ h1 .r{color:var(--red)}
     okTxt.textContent='Sjekker betalingen …';
     var forsok=0,sjekk=function(){
       fetch('https://klippfilm-betaling.klippfilm-betaling.workers.dev/vipps/status?ref='+encodeURIComponent(vref)).then(function(r){return r.json();}).then(function(j){
-        if(j.betalt){okTxt.textContent='Betaling mottatt';if(j.ordre)oid.textContent='Ordrenummer '+j.ordre;}
+        if(j.betalt){okTxt.textContent=j.refundert?'Betaling mottatt og refundert (test)':'Betaling mottatt';if(j.ordre)oid.textContent='Ordrenummer '+j.ordre;}
         else if(j.state==='CREATED'&&++forsok<8){setTimeout(sjekk,1500);}
         else{okTxt.textContent='Betalingen ble ikke fullført';tt.innerHTML='Betalingen ble <span class="r">ikke fullført.</span>';lede.innerHTML='Ingenting er trukket. <a href="betaling.html" style="text-decoration:underline">Prøv igjen</a>.';}
       }).catch(function(){okTxt.textContent='Vi bekrefter betalingen';});
