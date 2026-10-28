@@ -589,6 +589,7 @@ body,h1,h2,h3,.logo,button,input,textarea{font-family:'Schibsted Grotesk',system
           <div id="filmBriefs"></div>
           <div class="fld"><label for="f-web">Nettsiden din</label><input id="f-web" type="text" name="website" placeholder="dinbedrift.no" inputmode="url" autocomplete="url" required></div>
           <div class="fld"><label for="f-navn">Navn</label><input id="f-navn" type="text" name="name" placeholder="Fornavn og etternavn" autocomplete="name" required></div>
+          <div class="fld"><label for="f-tlf">Telefon</label><input id="f-tlf" type="tel" name="phone" placeholder="Mobilnummer" autocomplete="tel" inputmode="tel" required></div>
           <div class="fld"><label for="f-epost">E-post</label><input id="f-epost" type="email" name="email" placeholder="Hit sender vi Drive-lenken" autocomplete="email" required></div>
           <div class="ferr" id="formErr">Fyll inn feltene over, så er du ferdig.</div>
           <button type="submit" class="btn btn-hot"><span id="submitTxt">Bestill film for 99 kr</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M5 12h14M13 6l6 6-6 6" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
@@ -887,15 +888,15 @@ var started=false,o=new IntersectionObserver(function(es){if(es[0].isIntersectin
     if(f.company.value){location.href='takk.html';return;}
     var err=document.getElementById('formErr');
     f.beskrivelse.value=briefText();
-    if(!briefsOk()||!val('website')||!val('name')||!/^\S+@\S+\.\S+$/.test(val('email'))){err.style.display='block';return;}
+    if(!briefsOk()||!val('website')||!val('name')||val('phone').replace(/\D/g,'').length<8||!/^\S+@\S+\.\S+$/.test(val('email'))){err.style.display='block';return;}
     err.style.display='none';
-    var p={subject:'Ny bestilling: klipp 3D-film for '+price()+' kr',pakke:pakkeTxt(),antall:antall(),filmer:FILMS.join(','),ekstraformater:xtra(),stykkpris:unit(),formater:val('formater'),pris:price(),lead_source:LEAD_SOURCE,name:val('name'),email:val('email'),website:val('website'),
+    var p={subject:'Ny bestilling: klipp 3D-film for '+price()+' kr',pakke:pakkeTxt(),antall:antall(),filmer:FILMS.join(','),ekstraformater:xtra(),stykkpris:unit(),formater:val('formater'),pris:price(),lead_source:LEAD_SOURCE,name:val('name'),phone:val('phone'),email:val('email'),website:val('website'),
       tema:val('tema'),kanal:val('kanal'),beskrivelse:val('beskrivelse'),
       comment:['[klipp 3D-film 99 kr]','Antall: '+antall()+' | Filmer: '+pakkeTxt()+' | Viser: '+(val('tema')||'-')+' | Formater: '+(val('formater')||'-')+' ('+price()+' kr)','Ønsker:\n'+val('beskrivelse')].join('\n'),
       page_url:location.href,user_agent:navigator.userAgent,ordre:'KL-'+Date.now().toString(36).toUpperCase().slice(-6)};
     postTo(LEAD_WEBHOOK,p);
     try{var a=JSON.parse(localStorage.getItem('klipp_bestillinger')||'[]');a.push(p);localStorage.setItem('klipp_bestillinger',JSON.stringify(a.slice(-20)));}catch(x){}
-    try{sessionStorage.setItem('klipp_navn',val('name'));sessionStorage.setItem('klipp_ordre',JSON.stringify({antall:p.antall,stykkpris:p.stykkpris,pakke:p.pakke,filmer:p.filmer,ekstraformater:p.ekstraformater,formater:p.formater,pris:p.pris,id:p.ordre,name:p.name,email:p.email,website:p.website,tema:p.tema,kanal:p.kanal,beskrivelse:p.beskrivelse}));}catch(x){}
+    try{sessionStorage.setItem('klipp_navn',val('name'));sessionStorage.setItem('klipp_ordre',JSON.stringify({antall:p.antall,stykkpris:p.stykkpris,pakke:p.pakke,filmer:p.filmer,ekstraformater:p.ekstraformater,formater:p.formater,pris:p.pris,id:p.ordre,name:p.name,phone:p.phone,email:p.email,website:p.website,tema:p.tema,kanal:p.kanal,beskrivelse:p.beskrivelse}));}catch(x){}
     setTimeout(function(){location.href='betaling.html';},300);
   });
 })();
