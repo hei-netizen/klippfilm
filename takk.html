@@ -28,7 +28,11 @@ h1{font-weight:800;letter-spacing:-0.045em;line-height:.95;font-size:clamp(46px,
 h1 .r{color:var(--red)}
 .lede{color:var(--w2);font-size:19px;line-height:1.55;max-width:44ch;margin-top:22px}
 .oid{color:var(--w3);font-size:14px;margin-top:12px;letter-spacing:.02em}
-.steps{list-style:none;margin:36px 0 38px;border-top:1px solid var(--w4)}
+.eta{display:flex;flex-direction:column;gap:2px;margin:26px 0 0;padding:16px 20px;border:1px solid var(--w4);border-radius:18px;background:rgba(255,255,255,.04)}
+.eta span{color:var(--w3);font-size:14px}
+.eta b{font-weight:700;font-size:22px;letter-spacing:-0.02em}
+.eta b em{font-style:normal;color:var(--red)}
+.steps{margin-top:26px!important;list-style:none;margin:36px 0 38px;border-top:1px solid var(--w4)}
 .steps li{display:grid;grid-template-columns:36px 1fr;gap:14px;align-items:center;padding:16px 0;border-bottom:1px solid var(--w4)}
 .steps .d{width:28px;height:28px;border-radius:50%;border:1.5px solid var(--w4);display:flex;align-items:center;justify-content:center;font-size:12.5px;font-weight:700;color:var(--w3)}
 .steps .done .d{background:#29a35a;border-color:#29a35a;color:#fff}
@@ -42,6 +46,7 @@ h1 .r{color:var(--red)}
 .btn:hover{transform:translateY(-2px)}
 .btn-w{background:var(--w);color:#111}.btn-w .ar{background:var(--red);color:#fff}
 .btn-w:hover .ar{transform:translateX(-3px)}
+.btn-back{padding:7px 26px 7px 7px}.btn-back .lbl{flex:1;text-align:center}
 .btn-o{border:1px solid var(--w4);color:var(--w);padding:17px 24px}
 .btn-o:hover{border-color:var(--w3)}
 @media(max-width:520px){.ctas .btn{width:100%;justify-content:space-between}.ctas .btn-o{justify-content:center}}
@@ -66,15 +71,16 @@ h1 .r{color:var(--red)}
   <section>
     <span class="ok rise" id="okPill"><i><svg viewBox="0 0 24 24" fill="none" stroke-width="3.2"><path d="M20 6L9 17l-5-5" stroke-linecap="round" stroke-linejoin="round"/></svg></i><span id="okTxt">Betaling mottatt</span></span>
     <h1 class="rise r2" id="tt">Takk! <span class="r">Filmen er på vei.</span></h1>
-    <p class="lede rise r3" id="lede">Vi lager filmen ut fra det du skrev og nettsiden din, og sender den i en Drive-lenke på e-post. Forvent filmen innen 6 til 12 timer.</p>
+    <p class="lede rise r3" id="lede">Vi lager filmen ut fra det du skrev og nettsiden din, og sender den i en Drive-lenke på e-post. Forvent filmen innen 6 til 24 timer.</p>
     <p class="oid rise r3" id="oid"></p>
+    <div class="eta rise r3" id="eta"><span>Filmen er klar senest</span><b id="etaTid">innen 24 timer</b></div>
     <ol class="steps rise r3">
       <li class="done"><span class="d">✓</span><span><b>Bestilling og betaling</b><span class="t">Kvittering er sendt på e-post</span></span></li>
-      <li class="now"><span class="d">2</span><span><b>Vi lager filmen</b><span class="t">I 3D, ut fra nettsiden din og ønsket ditt. Ferdig innen 6 til 12 timer</span></span></li>
+      <li class="now"><span class="d">2</span><span><b>Vi lager filmen</b><span class="t">I 3D, ut fra nettsiden din og ønsket ditt. Ferdig innen 6 til 24 timer</span></span></li>
       <li><span class="d">3</span><span><b>Drive-lenke på e-post</b><span class="t">Last ned og bruk den der du vil</span></span></li>
     </ol>
     <div class="ctas rise r4">
-      <a href="index.html" class="btn btn-w"><span class="ar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M19 12H5M11 6l-6 6 6 6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>Tilbake til hovedsiden&nbsp;</a>
+      <a href="index.html" class="btn btn-w btn-back"><span class="ar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M19 12H5M11 6l-6 6 6 6" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="lbl">Tilbake til hovedsiden</span></a>
       <a href="index.html#filmer" class="btn btn-o">Se filmene våre</a>
     </div>
   </section>
@@ -91,11 +97,22 @@ h1 .r{color:var(--red)}
   if(o&&o.id)oid.textContent='Ordrenummer '+o.id+(o.formater?' · '+o.formater:'');
   var hi=n?('Takk, '+n+'! '):'Takk! ';
   tt.innerHTML=hi+'<span class="r">Filmen er på vei.</span>';
+  /* estimert levering: senest 24 timer etter betalingen, men aldri etter kl. 16 eller før kl. 08 (da gjelder kl. 16 dagen før).
+     Tidspunktet huskes, så det ikke flytter seg ved oppdatering. */
+  try{var key='klipp_betalt_'+((o&&o.id)||'x'),t0=+sessionStorage.getItem(key)||Date.now();sessionStorage.setItem(key,t0);
+    var d=new Date(Math.ceil((t0+24*36e5)/3e5)*3e5);
+    if(d.getHours()<8)d.setDate(d.getDate()-1);
+    if(d.getHours()<8||d.getHours()*60+d.getMinutes()>16*60)d.setHours(16,0,0,0);
+    var now=new Date(),dag=function(x){return new Date(x.getFullYear(),x.getMonth(),x.getDate()).getTime();},diff=Math.round((dag(d)-dag(now))/864e5);
+    var dl=diff===0?'i dag':diff===1?'i morgen':d.toLocaleDateString('nb-NO',{weekday:'long'});
+    var kl=('0'+d.getHours()).slice(-2)+':'+('0'+d.getMinutes()).slice(-2);
+    document.getElementById('etaTid').innerHTML=dl+' kl. <em>'+kl+'</em>';
+    document.querySelector('.steps .now .t').textContent='I 3D, ut fra nettsiden din og ønsket ditt. Ferdig senest '+dl+' kl. '+kl;}catch(e){}
   var sid=new URLSearchParams(location.search).get('session_id');
   if(sid){
-    /* innebygd Stripe (PHP-varianten): bekreft betalingen hos Stripe */
+    /* innebygd Stripe: bekreft betalingen hos Stripe via Cloudflare Worker «klippfilm-betaling» */
     okTxt.textContent='Sjekker betalingen …';
-    fetch('api/session-status.php?session_id='+encodeURIComponent(sid)).then(function(r){return r.json();}).then(function(j){
+    fetch('https://klippfilm-betaling.klippfilm-betaling.workers.dev/session-status?session_id='+encodeURIComponent(sid)).then(function(r){return r.json();}).then(function(j){
       if(j.betalt){okTxt.textContent='Betaling mottatt';if(j.ordre)oid.textContent='Ordrenummer '+j.ordre;}
       else{okTxt.textContent='Betalingen ble ikke fullført';tt.innerHTML='Betalingen ble <span class="r">ikke fullført.</span>';lede.innerHTML='Ingenting er trukket. <a href="betaling.html" style="text-decoration:underline">Prøv igjen</a>.';}
     }).catch(function(){okTxt.textContent='Vi bekrefter betalingen';});
