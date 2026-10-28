@@ -158,7 +158,7 @@ function load(fromLogin){
     if(fromLogin){try{localStorage.setItem('klipp_portal',token);}catch(e){}}
     var vr=d.valueRanges||[];
     var b=(vr[0]&&vr[0].values)||[],g=(vr[1]&&vr[1].values)||[];
-    orders=b.slice(1).map(function(r,i){return {rad:i+2,mottatt:r[0]||'',ordre:r[1]||'',navn:r[2]||'',epost:r[3]||'',nettside:r[4]||'',pakke:r[5]||'',antall:r[6]||'',formater:r[7]||'',pris:r[8]||'',besk:r[9]||'',viser:r[10]||'',status:r[11]||'Ny',notat:r[12]||''};}).filter(function(o){return o.ordre;});
+    orders=b.slice(1).map(function(r,i){return {rad:i+2,mottatt:r[0]||'',ordre:r[1]||'',navn:r[2]||'',epost:r[3]||'',nettside:r[4]||'',pakke:r[5]||'',antall:r[6]||'',formater:r[7]||'',pris:r[8]||'',besk:r[9]||'',viser:r[10]||'',status:r[11]||'Ny',notat:r[12]||'',tlf:r[13]||''};}).filter(function(o){return o.ordre;});
     todos=g.slice(1).map(function(r,i){return {rad:i+2,opprettet:r[0]||'',tekst:r[1]||'',ferdig:r[2]||'',notat:r[3]||''};}).filter(function(t){return t.tekst;});
     $('login').style.display='none';$('app').style.display='block';
     render();
@@ -197,6 +197,7 @@ function card(o){
     '<small>'+(o.pakke.indexOf('+')>=0?esc(o.antall)+' filmer: '+esc(o.pakke):esc(o.antall)+' × '+esc(o.pakke))+' · '+esc(o.ordre)+'</small><small class="r">'+esc(o.mottatt.slice(5))+'</small></div>'+
     '<div class="bd"><div class="kv">'+
       '<span>Nettside</span><p>'+(web?'<a href="'+esc(web)+'" target="_blank" rel="noopener">'+esc(o.nettside)+'</a>':'-')+'</p>'+
+      '<span>Telefon</span><p>'+(o.tlf?'<a href="tel:'+esc(o.tlf.replace(/\s/g,''))+'">'+esc(o.tlf)+'</a>':'-')+'</p>'+
       '<span>E-post</span><p><a href="mailto:'+esc(o.epost)+'?subject='+encodeURIComponent('Filmen din fra klipp ('+o.ordre+')')+'">'+esc(o.epost)+'</a></p>'+
       '<span>Viser</span><p>'+esc(o.viser||'-')+'</p>'+
       '<span>Formater</span><p>'+esc(o.formater||'-')+'</p>'+
