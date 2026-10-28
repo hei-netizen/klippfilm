@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="nb">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>Portal · klipp</title>
+<meta name="theme-color" content="#FAFAF8">
+<link rel="icon" type="image/svg+xml" href="../brand/klipp-mark-v4.svg">
+<!-- ============================================================
+     klipp: intern portal (Jona 28.10.2026)
+     Data: Google Sheet «Klippfilm – bestillinger og gjøremål» (hei@arcads.no)
+     via Make-scenario 8224640 (webhook under). Passordet sendes som token
+     og sjekkes i Make; det ligger ikke i denne filen.
+     Faner i arket: Bestillinger (A–M, L=Status, M=Notat) og Gjoremal (A–D).
+     ============================================================ -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#FAFAF8;--bg2:#F1F0EC;--card:#fff;--ink:#111;--ink2:#2A2733;--muted:#6B6775;--line:rgba(17,17,17,.09);
+  --red:#E4352B;--ok:#1F8A4C;--font:'Schibsted Grotesk',system-ui,-apple-system,'Segoe UI',sans-serif}
+*{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-text-size-adjust:100%}
+body{font-family:var(--font);background:var(--bg);color:var(--ink);font-size:15.5px;line-height:1.5;letter-spacing:-0.005em;-webkit-font-smoothing:antialiased;min-height:100vh}
+button,input,textarea,select{font-family:inherit;font-size:inherit;color:inherit}
+a{color:inherit}
+.top{position:sticky;top:0;z-index:20;background:rgba(250,250,248,.9);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:1px solid var(--line)}
+.top .in{max-width:1280px;margin:0 auto;padding:12px 16px;display:flex;align-items:center;gap:14px}
+.logo{display:flex;align-items:center;gap:8px;font-weight:800;font-size:23px;letter-spacing:-0.055em;text-decoration:none}
+.logo img{width:28px;height:28px}
+.logo small{font-size:13px;font-weight:600;letter-spacing:0;color:var(--muted);margin-left:4px}
+.tabs{display:flex;gap:4px;margin-left:auto;background:var(--bg2);border-radius:999px;padding:4px}
+.tabs button{border:0;background:none;padding:7px 14px;border-radius:999px;font-weight:700;font-size:14px;cursor:pointer;color:var(--muted)}
+.tabs button.on{background:var(--card);color:var(--ink);box-shadow:0 1px 3px rgba(0,0,0,.08)}
+.tabs .n{display:inline-block;min-width:18px;padding:0 5px;margin-left:5px;border-radius:9px;background:var(--red);color:#fff;font-size:11.5px;line-height:18px;text-align:center}
+.ref{border:1px solid var(--line);background:var(--card);border-radius:999px;width:36px;height:36px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex:none}
+.ref svg{width:16px;height:16px}
+.ref.spin svg{animation:sp 1s linear infinite}
+@keyframes sp{to{transform:rotate(360deg)}}
+main{max-width:1280px;margin:0 auto;padding:20px 16px 80px}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:20px}
+.stat{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px 16px}
+.stat span{display:block;font-size:12.5px;font-weight:600;color:var(--muted)}
+.stat b{display:block;font-size:26px;font-weight:800;letter-spacing:-0.03em;margin-top:2px}
+@media(max-width:640px){.stats{grid-template-columns:repeat(2,1fr)}.top .in{flex-wrap:wrap}.tabs{margin-left:0;order:3;width:100%}.ref{margin-left:auto}.tabs button{flex:1}}
+.board{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;align-items:start}
+@media(max-width:1000px){.board{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:600px){.board{grid-template-columns:1fr}}
+.col{background:var(--bg2);border-radius:18px;padding:10px}
+.col h3{display:flex;align-items:center;gap:8px;font-size:14px;font-weight:800;padding:4px 6px 10px}
+.col h3 i{width:8px;height:8px;border-radius:50%;background:var(--muted)}
+.col h3 em{font-style:normal;font-weight:600;color:var(--muted);margin-left:auto}
+.col.ny h3 i{background:var(--red)}.col.betalt h3 i{background:#D99A1E}.col.prod h3 i{background:#3A6FE0}.col.levert h3 i{background:var(--ok)}
+.empty{font-size:13.5px;color:var(--muted);padding:6px 6px 10px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;margin-bottom:8px;overflow:hidden}
+.card .hd{padding:12px 14px;cursor:pointer;display:grid;grid-template-columns:1fr auto;gap:2px 10px}
+.card .hd b{font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.card .hd .pr{font-weight:800;text-align:right}
+.card .hd small{color:var(--muted);font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.card .hd small.r{text-align:right}
+.card .bd{display:none;border-top:1px solid var(--line);padding:12px 14px 14px;font-size:14.5px}
+.card.open .bd{display:block}
+.kv{display:grid;grid-template-columns:86px 1fr;gap:5px 10px;margin-bottom:12px}
+.kv span{color:var(--muted)}
+.kv p{overflow-wrap:anywhere}
+.kv a{color:var(--ink);font-weight:600}
+.besk{background:var(--bg2);border-radius:10px;padding:10px 12px;white-space:pre-wrap;margin-bottom:12px;font-size:14px}
+.moves{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px}
+.moves button{border:1px solid var(--line);background:var(--card);border-radius:999px;padding:6px 12px;font-size:13px;font-weight:700;cursor:pointer}
+.moves button.go{background:var(--ink);color:#fff;border-color:var(--ink)}
+.moves button:disabled{opacity:.5;cursor:default}
+textarea.note{width:100%;min-height:62px;border:1px solid var(--line);border-radius:10px;padding:9px 11px;resize:vertical;background:#fff;font-size:14px}
+.saved{font-size:12.5px;color:var(--ok);font-weight:600;height:18px;margin-top:4px}
+.todo{max-width:760px}
+.add{display:flex;gap:8px;margin-bottom:16px}
+.add input{flex:1;min-width:0;border:1px solid var(--line);border-radius:12px;padding:12px 14px;background:#fff}
+.add button,.login button{border:0;background:var(--ink);color:#fff;border-radius:12px;padding:0 18px;font-weight:700;cursor:pointer}
+.ti{display:flex;align-items:flex-start;gap:12px;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin-bottom:6px}
+.ti input{width:20px;height:20px;margin-top:1px;accent-color:var(--ink);flex:none;cursor:pointer}
+.ti p{flex:1}
+.ti small{display:block;color:var(--muted);font-size:12.5px}
+.ti.done p{color:var(--muted);text-decoration:line-through}
+.sub{font-size:13px;font-weight:700;color:var(--muted);margin:22px 0 8px}
+.login{max-width:380px;margin:12vh auto 0;padding:0 16px;text-align:center}
+.login h1{font-size:34px;font-weight:800;letter-spacing:-0.04em;margin:14px 0 6px}
+.login p{color:var(--muted);margin-bottom:20px}
+.login form{display:flex;gap:8px}
+.login input{flex:1;min-width:0;border:1px solid var(--line);border-radius:12px;padding:13px 14px;background:#fff}
+.login img{width:52px;height:52px;margin:0 auto}
+.err{color:var(--red);font-weight:600;font-size:14px;margin-top:12px;min-height:20px}
+.toast{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);background:var(--ink);color:#fff;padding:10px 16px;border-radius:999px;font-size:14px;font-weight:600;opacity:0;transition:opacity .2s;pointer-events:none}
+.toast.on{opacity:1}
+.upd{font-size:12.5px;color:var(--muted);margin:-8px 0 14px}
+</style>
+</head>
+<body>
+
+<div id="login" class="login" style="display:none">
+  <img src="../brand/klipp-mark-v4.svg" alt="">
+  <h1>klipp portal</h1>
+  <p>Bestillinger og gjøremål.</p>
+  <form id="lf"><input id="pw" type="password" placeholder="Passord" autocomplete="current-password"><button>Logg inn</button></form>
+  <div class="err" id="lerr"></div>
+</div>
+
+<div id="app" style="display:none">
+  <header class="top"><div class="in">
+    <a class="logo" href="../index.html"><img src="../brand/klipp-mark-v4.svg" alt="">klipp<small>portal</small></a>
+    <nav class="tabs"><button data-t="best" class="on">Bestillinger<span class="n" id="nNy" style="display:none"></span></button><button data-t="todo">Gjøremål<span class="n" id="nTodo" style="display:none"></span></button></nav>
+    <button class="ref" id="ref" title="Oppdater"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-2.64-6.36"/><path d="M21 3v6h-6"/></svg></button>
+  </div></header>
+
+  <main>
+    <section id="best">
+      <div class="stats">
+        <div class="stat"><span>Nye</span><b id="sNy">0</b></div>
+        <div class="stat"><span>I produksjon</span><b id="sProd">0</b></div>
+        <div class="stat"><span>Levert</span><b id="sLev">0</b></div>
+        <div class="stat"><span>Omsetning (betalt + levert)</span><b id="sOms">0 kr</b></div>
+      </div>
+      <p class="upd" id="upd"></p>
+      <div class="board" id="board"></div>
+    </section>
+    <section id="todo" class="todo" style="display:none">
+      <form class="add" id="addf"><input id="addi" placeholder="Nytt gjøremål" maxlength="300"><button>Legg til</button></form>
+      <div id="tOpen"></div>
+      <div class="sub" id="tDoneH" style="display:none">Ferdig</div>
+      <div id="tDone"></div>
+    </section>
+  </main>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+var HOOK='https://hook.eu1.make.com/l21mgtynhduw9sdut9wfbv1rho7255ua';
+var COLS=[['Ny','ny'],['Betalt','betalt'],['I produksjon','prod'],['Levert','levert']];
+var token=null,orders=[],todos=[],openId=null,busy=false;
+try{token=localStorage.getItem('klipp_portal');}catch(e){}
+
+function $(id){return document.getElementById(id);}
+function esc(s){return String(s==null?'':s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});}
+function toast(t){var el=$('toast');el.textContent=t;el.classList.add('on');clearTimeout(toast.t);toast.t=setTimeout(function(){el.classList.remove('on');},1800);}
+function kr(n){return (Number(n)||0).toLocaleString('nb-NO')+' kr';}
+function call(data){
+  var b=new URLSearchParams();b.append('token',token||'');for(var k in data)b.append(k,data[k]);
+  return fetch(HOOK,{method:'POST',body:b}).then(function(r){return r.text();}).then(function(t){
+    try{return JSON.parse(t);}catch(e){throw new Error(t==='Accepted'?'feil passord':t);}
+  });
+}
+
+function showLogin(msg){$('app').style.display='none';$('login').style.display='block';$('lerr').textContent=msg||'';$('pw').focus();}
+$('lf').addEventListener('submit',function(e){e.preventDefault();token=$('pw').value.trim();if(!token)return;$('lerr').textContent='Sjekker…';load(true);});
+
+function load(fromLogin){
+  if(busy)return;busy=true;$('ref').classList.add('spin');
+  call({handling:'hent'}).then(function(d){
+    if(fromLogin){try{localStorage.setItem('klipp_portal',token);}catch(e){}}
+    var vr=d.valueRanges||[];
+    var b=(vr[0]&&vr[0].values)||[],g=(vr[1]&&vr[1].values)||[];
+    orders=b.slice(1).map(function(r,i){return {rad:i+2,mottatt:r[0]||'',ordre:r[1]||'',navn:r[2]||'',epost:r[3]||'',nettside:r[4]||'',pakke:r[5]||'',antall:r[6]||'',formater:r[7]||'',pris:r[8]||'',besk:r[9]||'',viser:r[10]||'',status:r[11]||'Ny',notat:r[12]||''};}).filter(function(o){return o.ordre;});
+    todos=g.slice(1).map(function(r,i){return {rad:i+2,opprettet:r[0]||'',tekst:r[1]||'',ferdig:r[2]||'',notat:r[3]||''};}).filter(function(t){return t.tekst;});
+    $('login').style.display='none';$('app').style.display='block';
+    render();
+    $('upd').textContent='Oppdatert '+new Date().toLocaleTimeString('nb-NO',{hour:'2-digit',minute:'2-digit'});
+  }).catch(function(err){
+    if(String(err.message).indexOf('passord')>=0){try{localStorage.removeItem('klipp_portal');}catch(e){}showLogin('Feil passord.');}
+    else if(fromLogin){showLogin('Fikk ikke kontakt. Prøv igjen.');}
+    else toast('Fikk ikke oppdatert');
+  }).then(function(){busy=false;$('ref').classList.remove('spin');});
+}
+
+function render(){renderBoard();renderTodos();}
+
+function renderBoard(){
+  var html='',c={};COLS.forEach(function(k){c[k[0]]=[];});
+  orders.forEach(function(o){(c[o.status]||(c[o.status]=[])).push(o);});
+  COLS.forEach(function(k){
+    var list=c[k[0]].slice().reverse();
+    html+='<div class="col '+k[1]+'"><h3><i></i>'+k[0]+'<em>'+list.length+'</em></h3>';
+    if(!list.length)html+='<div class="empty">Ingen</div>';
+    list.forEach(function(o){html+=card(o);});
+    html+='</div>';
+  });
+  $('board').innerHTML=html;
+  var ny=c['Ny'].length;$('sNy').textContent=ny;$('sProd').textContent=c['I produksjon'].length;$('sLev').textContent=c['Levert'].length;
+  var oms=0;orders.forEach(function(o){if(o.status==='Betalt'||o.status==='I produksjon'||o.status==='Levert')oms+=Number(o.pris)||0;});$('sOms').textContent=kr(oms);
+  $('nNy').textContent=ny;$('nNy').style.display=ny?'':'none';
+}
+
+function card(o){
+  var i=-1;COLS.forEach(function(k,j){if(k[0]===o.status)i=j;});
+  var next=COLS[i+1],web=o.nettside&&!/^https?:/.test(o.nettside)?'https://'+o.nettside:o.nettside;
+  var moves='';COLS.forEach(function(k){if(k[0]!==o.status)moves+='<button data-mv="'+esc(k[0])+'"'+(next&&k[0]===next[0]?' class="go"':'')+'>'+(next&&k[0]===next[0]?'→ ':'')+esc(k[0])+'</button>';});
+  return '<div class="card'+(openId===o.ordre?' open':'')+'" data-id="'+esc(o.ordre)+'">'+
+    '<div class="hd"><b>'+esc(o.navn||'Uten navn')+'</b><span class="pr">'+kr(o.pris)+'</span>'+
+    '<small>'+esc(o.antall)+' × '+esc(o.pakke)+' · '+esc(o.ordre)+'</small><small class="r">'+esc(o.mottatt.slice(5))+'</small></div>'+
+    '<div class="bd"><div class="kv">'+
+      '<span>Nettside</span><p>'+(web?'<a href="'+esc(web)+'" target="_blank" rel="noopener">'+esc(o.nettside)+'</a>':'-')+'</p>'+
+      '<span>E-post</span><p><a href="mailto:'+esc(o.epost)+'?subject='+encodeURIComponent('Filmen din fra klipp ('+o.ordre+')')+'">'+esc(o.epost)+'</a></p>'+
+      '<span>Viser</span><p>'+esc(o.viser||'-')+'</p>'+
+      '<span>Formater</span><p>'+esc(o.formater||'-')+'</p>'+
+      '<span>Mottatt</span><p>'+esc(o.mottatt)+'</p></div>'+
+    '<div class="besk">'+esc(o.besk||'Ingen beskrivelse')+'</div>'+
+    '<div class="moves">'+moves+'</div>'+
+    '<textarea class="note" placeholder="Notat (lagres når du klikker utenfor)">'+esc(o.notat)+'</textarea><div class="saved"></div></div></div>';
+}
+
+$('board').addEventListener('click',function(e){
+  var c=e.target.closest('.card');if(!c)return;var o=orders.filter(function(x){return x.ordre===c.dataset.id;})[0];if(!o)return;
+  if(e.target.closest('.hd')){openId=openId===o.ordre?null:o.ordre;c.classList.toggle('open');return;}
+  var mv=e.target.closest('[data-mv]');if(mv){
+    var st=mv.dataset.mv,old=o.status;o.status=st;openId=o.ordre;renderBoard();
+    call({handling:'lagre',felt:'status',rad:o.rad,body:JSON.stringify({values:[[st]]})}).then(function(){toast(o.ordre+' → '+st);}).catch(function(){o.status=old;renderBoard();toast('Kunne ikke lagre');});
+  }
+});
+$('board').addEventListener('focusout',function(e){
+  if(!e.target.classList.contains('note'))return;var c=e.target.closest('.card');var o=orders.filter(function(x){return x.ordre===c.dataset.id;})[0];
+  var v=e.target.value;if(!o||v===o.notat)return;var s=c.querySelector('.saved');
+  call({handling:'lagre',felt:'notat',rad:o.rad,body:JSON.stringify({values:[[v]]})}).then(function(){o.notat=v;s.textContent='Lagret';setTimeout(function(){s.textContent='';},1500);}).catch(function(){s.textContent='';toast('Kunne ikke lagre notatet');});
+});
+
+function renderTodos(){
+  var op=todos.filter(function(t){return !t.ferdig;}),dn=todos.filter(function(t){return t.ferdig;}).reverse();
+  function row(t){return '<label class="ti'+(t.ferdig?' done':'')+'" data-rad="'+t.rad+'"><input type="checkbox"'+(t.ferdig?' checked':'')+'><p>'+esc(t.tekst)+'<small>'+(t.ferdig?'Ferdig '+esc(t.ferdig):'Lagt til '+esc(t.opprettet))+'</small></p></label>';}
+  $('tOpen').innerHTML=op.length?op.map(row).join(''):'<div class="empty">Ingenting igjen.</div>';
+  $('tDone').innerHTML=dn.map(row).join('');$('tDoneH').style.display=dn.length?'':'none';
+  $('nTodo').textContent=op.length;$('nTodo').style.display=op.length?'':'none';
+}
+$('todo').addEventListener('change',function(e){
+  var l=e.target.closest('.ti');if(!l)return;var t=todos.filter(function(x){return x.rad==l.dataset.rad;})[0];if(!t)return;
+  var old=t.ferdig;t.ferdig=e.target.checked?new Date().toISOString().slice(0,10):'';renderTodos();
+  call({handling:'gjoremal_sett',rad:t.rad,body:JSON.stringify({values:[[t.opprettet,t.tekst,t.ferdig,t.notat]]})}).catch(function(){t.ferdig=old;renderTodos();toast('Kunne ikke lagre');});
+});
+$('addf').addEventListener('submit',function(e){
+  e.preventDefault();var v=$('addi').value.trim();if(!v)return;$('addi').value='';
+  var d=new Date().toISOString().slice(0,10);todos.push({rad:0,opprettet:d,tekst:v,ferdig:'',notat:''});renderTodos();
+  call({handling:'gjoremal_ny',body:JSON.stringify({values:[[d,v,'','']]})}).then(function(){load();}).catch(function(){toast('Kunne ikke lagre');});
+});
+
+document.querySelectorAll('.tabs button').forEach(function(b){b.addEventListener('click',function(){
+  document.querySelectorAll('.tabs button').forEach(function(x){x.classList.toggle('on',x===b);});
+  $('best').style.display=b.dataset.t==='best'?'':'none';$('todo').style.display=b.dataset.t==='todo'?'':'none';
+});});
+$('ref').addEventListener('click',function(){load();});
+setInterval(function(){if(token&&document.visibilityState==='visible'&&!document.querySelector('.note:focus'))load();},60000);
+document.addEventListener('visibilitychange',function(){if(document.visibilityState==='visible'&&token&&$('app').style.display==='block')load();});
+
+if(token)load(true);else showLogin();
+</script>
+</body>
+</html>
