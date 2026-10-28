@@ -14,8 +14,8 @@
      Bricolage Grotesque + Figtree, fargeovergang i nøkkelord). Eget design og egen tekst.
      Eksempelfilmene er spec-filmer (ikke bestilt eller godkjent av merkene), og det står på siden.
      IKKE PÅ SIDEN (ikke bestemt ennå): betalingsmåte, leveringstid, antall endringer.
-     Skjema: veiviser med trykkvalg, 3 steg, kontaktfelt sist. LEAD_WEBHOOK er tom med vilje
-     (egen bestillingsflyt for klipp). Må kobles før trafikk.
+     Skjema: veiviser med trykkvalg, 3 steg, kontaktfelt sist. LEAD_WEBHOOK = Make-scenario 8224640
+     (bestillinger havner i portalen på /portal/).
      ============================================================ -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -747,7 +747,7 @@ body,h1,h2,h3,.logo,button,input,textarea{font-family:'Schibsted Grotesk',system
 
 <script>
 /* ===== KONFIG ===== */
-var LEAD_WEBHOOK=''; /* må kobles (Make) før siden får trafikk. Tom = lagres bare lokalt. */
+var LEAD_WEBHOOK='https://hook.eu1.make.com/l21mgtynhduw9sdut9wfbv1rho7255ua'; /* Make 8224640: bestilling -> arket «Klippfilm – bestillinger og gjøremål» + varsel + portal (/portal/) */
 var LEAD_SOURCE='klipp-3d-film-99kr';
 
 /* ===== hero: filmspiller (desktop: kort til høyre, mobil: fullbilde) ===== */
