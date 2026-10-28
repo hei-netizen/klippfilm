@@ -471,6 +471,17 @@ body,h1,h2,h3,.logo,button,input,textarea{font-family:'Schibsted Grotesk',system
 .addfilm{width:100%;border:1.5px dashed rgba(17,17,17,.22);background:none;border-radius:var(--rm);padding:13px;font-weight:700;font-size:15px;cursor:pointer;color:var(--ink2);font-family:var(--disp);transition:.15s}
 .addfilm:hover{border-color:var(--ink);color:var(--ink)}
 .addfilm:disabled{opacity:.4;cursor:not-allowed}
+.fboxes{display:grid;gap:10px}
+.fbox{border:1.5px solid var(--line);border-radius:var(--rm);padding:10px;background:var(--bg)}
+.fbox .fh{display:flex;justify-content:space-between;align-items:baseline;margin:2px 4px 9px;font-weight:700;font-size:14px;color:var(--ink2)}
+.fbox .fh small{font-weight:600;color:var(--muted);font-size:12.5px}
+.fbox .opts{gap:6px}
+.fbox .opt{background:#fff;padding:10px 11px;font-size:14.5px}
+.fbox .opt .ic{width:32px;height:32px;border-radius:9px}
+.fbox .opt .ic svg{width:18px;height:18px}
+.fsingle .fbox{border:0;padding:0;background:none}
+.fsingle .fbox .fh{display:none}
+.fsingle .fbox .opt{background:var(--bg)}
 </style>
 </head>
 <body>
@@ -555,16 +566,11 @@ body,h1,h2,h3,.logo,button,input,textarea{font-family:'Schibsted Grotesk',system
         <input type="hidden" name="tema">
         <div class="step" data-step="2">
           <h3>Hvilke formater vil du ha?</h3>
+          <p class="qhint" id="fmtHint">Første format er med i prisen. Hvert ekstra format koster 10 kr.</p>
           <input type="hidden" name="formater">
-          <div class="opts fmts">
-            <button type="button" class="opt fmt on" data-v="Stående 9:16"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><rect x="7.0" y="3.0" width="10" height="18" rx="2"/></svg></span><span>Stående 9:16<small>Reels, TikTok, Stories</small></span></button>
-            <button type="button" class="opt fmt" data-v="Kvadrat 1:1"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><rect x="4.5" y="4.5" width="15" height="15" rx="2"/></svg></span><span>Kvadrat 1:1<small>Feed</small></span></button>
-            <button type="button" class="opt fmt" data-v="Portrett 4:5"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><rect x="5.5" y="4.0" width="13" height="16" rx="2"/></svg></span><span>Portrett 4:5<small>Instagram og Facebook</small></span></button>
-            <button type="button" class="opt fmt" data-v="Liggende 16:9"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><rect x="2.5" y="6.5" width="19" height="11" rx="2"/></svg></span><span>Liggende 16:9<small>YouTube og nettside</small></span></button>
-          </div>
+          <div class="fboxes" id="fmtFilms"></div>
           <div class="fmtsum"><span id="fmtTxt">1 format inkludert</span><b id="fmtSum">99 kr</b></div>
-          <p class="fmtnote">Første format er med i prisen. Hvert ekstra format koster 10 kr per film.</p>
-          <button type="button" class="btn btn-ink fmtnext" id="fmtNext">Neste<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M5 12h14M13 6l6 6-6 6" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+                    <button type="button" class="btn btn-ink fmtnext" id="fmtNext">Neste<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M5 12h14M13 6l6 6-6 6" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
           <button type="button" class="back" data-back>&larr; Tilbake</button>
         </div>
         <div class="step" data-step="3">
@@ -806,49 +812,58 @@ var started=false,o=new IntersectionObserver(function(es){if(es[0].isIntersectin
   var steps=[].slice.call(f.querySelectorAll('.step')),cur=0;
   function show(i){cur=i;steps.forEach(function(s,k){s.classList.toggle('on',k===i);});document.getElementById('stepTxt').textContent=(i+1)+' av '+steps.length;document.getElementById('stepBar').style.width=((i+1)/steps.length*100)+'%';}
   f.querySelectorAll('.opts:not(.fmts)').forEach(function(g){g.querySelectorAll('.opt').forEach(function(o){o.addEventListener('click',function(){g.querySelectorAll('.opt').forEach(function(x){x.classList.remove('on');});o.classList.add('on');f[g.getAttribute('data-name')].value=o.getAttribute('data-v');if(g.getAttribute('data-name')==='pakke'&&typeof updPrice==='function')updPrice();setTimeout(function(){show(Math.min(cur+1,3));},240);});});});
-  /* formatvalg: 9:16 er med, +10 kr per ekstra format */
-  var BASE=99,EXTRA=10;
+  /* formatvalg per film: første format er med, +10 kr per ekstra format */
+  var EXTRA=10;
   var updPrice;
-  function fmts(){return [].slice.call(f.querySelectorAll('.opt.fmt.on')).map(function(b){return b.getAttribute('data-v');});}
-  /* filmliste: hver film har sin egen lengde */
+  var FMTS=[['Stående 9:16','Reels, TikTok, Stories','7.0','3.0','10','18'],['Kvadrat 1:1','Feed','4.5','4.5','15','15'],['Portrett 4:5','Instagram og Facebook','5.5','4.0','13','16'],['Liggende 16:9','YouTube og nettside','2.5','6.5','19','11']];
+  /* filmliste: hver film har sin egen lengde og egne formater */
   var LENS={Kort:{p:99,t:'20 sek'},Medium:{p:199,t:'60 sek'},Lang:{p:299,t:'5 min'}},ORDER=['Kort','Medium','Lang'];
-  var FILMS=['Kort'],MAXF=5;
+  var FILMS=['Kort'],FF=[['Stående 9:16']],MAXF=5;
   function antall(){return FILMS.length;}
   function baseSum(){return FILMS.reduce(function(a,k){return a+LENS[k].p;},0);}
-  function price(){return baseSum()+EXTRA*Math.max(0,fmts().length-1)*FILMS.length;}
-  function unit(){return FILMS.every(function(k){return k===FILMS[0];})?LENS[FILMS[0]].p+EXTRA*Math.max(0,fmts().length-1):'';}
+  function xtra(){return FF.reduce(function(a,x){return a+Math.max(0,x.length-1);},0);}
+  function price(){return baseSum()+EXTRA*xtra();}
+  function same(){return FILMS.every(function(k){return k===FILMS[0];})&&FF.every(function(x){return x.join()===FF[0].join();});}
+  function unit(){return same()?LENS[FILMS[0]].p+EXTRA*Math.max(0,FF[0].length-1):'';}
+  function fmtTxt(){return FF.length===1||FF.every(function(x){return x.join()===FF[0].join();})?FF[0].join(', '):FF.map(function(x,i){return 'Film '+(i+1)+': '+x.join(', ');}).join(' | ');}
   function pakkeTxt(){var c={};FILMS.forEach(function(k){c[k]=(c[k]||0)+1;});var ks=ORDER.filter(function(k){return c[k];});
     return ks.length===1?ks[0]:ks.map(function(k){return (c[k]>1?c[k]+' ':'')+k;}).join(' + ');}
-  updPrice=function(){var n=fmts().length,p=price(),q=antall();f.formater.value=fmts().join(', ');f.antall.value=q;f.pakke.value=pakkeTxt();
-    document.getElementById('fmtTxt').textContent=n<=1?'1 format inkludert':n+' formater (1 inkludert + '+(n-1)+' × 10 kr'+(q>1?' × '+q+' filmer':'')+')';
+  updPrice=function(){var p=price(),q=antall(),x=xtra();f.formater.value=fmtTxt();f.antall.value=q;f.pakke.value=pakkeTxt();
+    document.getElementById('fmtTxt').textContent=x?x+' ekstra format'+(x>1?'er':'')+' × 10 kr':(q>1?'Ett format per film inkludert':'1 format inkludert');
     document.getElementById('fmtSum').textContent=p+' kr';
     document.getElementById('listTxt').textContent=q>1?q+' filmer: '+pakkeTxt():'1 film: '+FILMS[0];document.getElementById('listSum').textContent=baseSum()+' kr';
-    document.querySelectorAll('.price-tag').forEach(function(t){t.innerHTML=p+' kr <small>'+(q>1?q+' filmer':(n>1?n+' formater':'per film'))+'</small>';});
-    var sb=document.getElementById('submitTxt');if(sb)sb.textContent='Bestill '+(q>1?q+' filmer':'film')+' for '+p+' kr';
-    document.getElementById('fmtNext').disabled=n===0;document.getElementById('fmtNext').style.opacity=n===0?.4:1;};
+    document.querySelectorAll('.price-tag').forEach(function(t){t.innerHTML=p+' kr <small>'+(q>1?q+' filmer':'per film')+'</small>';});
+    var sb=document.getElementById('submitTxt');if(sb)sb.textContent='Bestill '+(q>1?q+' filmer':'film')+' for '+p+' kr';};
+  var fbox=document.getElementById('fmtFilms');
+  function renderFmts(){var n=FILMS.length;fbox.classList.toggle('fsingle',n===1);
+    document.getElementById('fmtHint').textContent=n>1?'Velg formater for hver film. Første format på hver film er med i prisen, hvert ekstra koster 10 kr.':'Første format er med i prisen. Hvert ekstra format koster 10 kr.';
+    fbox.innerHTML=FILMS.map(function(k,i){var sel=FF[i];return '<div class="fbox" data-i="'+i+'"><div class="fh"><span>Film '+(i+1)+' · '+k+'</span><small>'+(sel.length>1?'+'+(sel.length-1)*10+' kr':'inkludert')+'</small></div><div class="opts fmts">'+
+      FMTS.map(function(m){var on=sel.indexOf(m[0])>=0;return '<button type="button" class="opt fmt'+(on?' on':'')+'" data-v="'+m[0]+'" aria-pressed="'+on+'"><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><rect x="'+m[2]+'" y="'+m[3]+'" width="'+m[4]+'" height="'+m[5]+'" rx="2"/></svg></span><span>'+m[0]+'<small>'+m[1]+'</small></span></button>';}).join('')+'</div></div>';}).join('');}
+  fbox.addEventListener('click',function(e){var b=e.target.closest('.opt.fmt');if(!b)return;var i=+b.closest('.fbox').dataset.i,v=b.dataset.v,sel=FF[i],k=sel.indexOf(v);
+    if(k>=0){if(sel.length>1)sel.splice(k,1);}else{sel.push(v);sel.sort(function(a,c){return FMTS.findIndex(function(m){return m[0]===a;})-FMTS.findIndex(function(m){return m[0]===c;});});}
+    renderFmts();renderBriefs();updPrice();});
   var list=document.getElementById('filmList'),addBtn=document.getElementById('addFilm');
   function renderFilms(){var n=FILMS.length;
     list.innerHTML=FILMS.map(function(k,i){return '<div class="frow" data-i="'+i+'"><div class="fh"><span>'+(n>1?'Film '+(i+1):'Filmen din')+'</span>'+(n>1?'<button type="button" class="rm" data-rm="'+i+'">Fjern</button>':'')+'</div><div class="seg">'+
       ORDER.map(function(L){return '<button type="button" data-len="'+L+'" class="'+(L===k?'on':'')+'" aria-pressed="'+(L===k)+'"><b>'+L+'</b><small>'+LENS[L].t+' · '+LENS[L].p+' kr</small></button>';}).join('')+'</div></div>';}).join('');
     addBtn.disabled=n>=MAXF;addBtn.textContent=n>=MAXF?'Maks '+MAXF+' filmer per bestilling':'+ Legg til en film til';
-    renderBriefs();updPrice();}
+    renderBriefs();renderFmts();updPrice();}
   list.addEventListener('click',function(e){var b=e.target.closest('[data-len]'),r=e.target.closest('[data-rm]');
     if(b){var i=+b.closest('.frow').dataset.i;FILMS[i]=b.dataset.len;renderFilms();}
-    else if(r){var j=+r.dataset.rm;saveBriefs();saved.splice(j,1);FILMS.splice(j,1);renderFilms();}});
-  addBtn.addEventListener('click',function(){if(FILMS.length<MAXF){FILMS.push(FILMS[FILMS.length-1]==='Kort'?'Medium':'Kort');renderFilms();}});
+    else if(r){var j=+r.dataset.rm;saveBriefs();saved.splice(j,1);FILMS.splice(j,1);FF.splice(j,1);renderFilms();}});
+  addBtn.addEventListener('click',function(){if(FILMS.length<MAXF){FILMS.push(FILMS[FILMS.length-1]==='Kort'?'Medium':'Kort');FF.push(['Stående 9:16']);renderFilms();}});
   /* egen beskrivelse per film */
   var PH=['Vis kaffen vår bli brent, mørkt og eksklusivt. Avslutt med logoen og «Bestill på nett».','Vis hvordan kunden bestiller i appen vår, lyst og enkelt.','Kampanjen vår for sommeren, med produktet i fokus.','Teamet vårt og hva vi står for, rolig og varmt.','Et nytt produkt som lanseres, energisk og tydelig.'];
   var briefs=document.getElementById('filmBriefs'),saved=[];
   function saveBriefs(){[].slice.call(briefs.querySelectorAll('textarea')).forEach(function(t,i){saved[i]=t.value;});}
   function renderBriefs(){var n=antall();saveBriefs();
     briefs.innerHTML='';for(var i=0;i<n;i++){var d=document.createElement('div');d.className='fld brief';
-      d.innerHTML='<label for="b'+i+'">'+(n>1?'Film '+(i+1)+': hva skal den handle om?':'Hva skal filmen handle om?')+'<i>'+FILMS[i]+' · '+LENS[FILMS[i]].t+'</i></label><textarea id="b'+i+'" rows="4" placeholder="Jo mer spesifikk du er, jo bedre blir filmen. Skriv hva den skal vise, stemningen og hva seerne skal gjøre etterpå.&#10;&#10;F.eks. '+PH[i%PH.length].replace(/"/g,'&quot;')+'"></textarea>';
+      d.innerHTML='<label for="b'+i+'">'+(n>1?'Film '+(i+1)+': hva skal den handle om?':'Hva skal filmen handle om?')+'<i>'+FILMS[i]+' · '+LENS[FILMS[i]].t+' · '+FF[i].map(function(v){return v.split(' ').pop();}).join(', ')+'</i></label><textarea id="b'+i+'" rows="4" placeholder="Jo mer spesifikk du er, jo bedre blir filmen. Skriv hva den skal vise, stemningen og hva seerne skal gjøre etterpå.&#10;&#10;F.eks. '+PH[i%PH.length].replace(/"/g,'&quot;')+'"></textarea>';
       briefs.appendChild(d);d.querySelector('textarea').value=saved[i]||'';}}
   document.getElementById('qNext').addEventListener('click',function(){show(1);});
   function briefText(){return [].slice.call(briefs.querySelectorAll('textarea')).map(function(t,i,a){return (a.length>1?'Film '+(i+1)+' ('+FILMS[i]+'): ':'')+t.value.trim();}).join('\n');}
   function briefsOk(){return [].slice.call(briefs.querySelectorAll('textarea')).every(function(t){return t.value.trim().length>0;});}
-  f.querySelectorAll('.opt.fmt').forEach(function(b){b.addEventListener('click',function(){b.classList.toggle('on');updPrice();});});
-  document.getElementById('fmtNext').addEventListener('click',function(){if(fmts().length)show(2);});
+  document.getElementById('fmtNext').addEventListener('click',function(){show(2);});
   renderFilms();
   f.querySelectorAll('[data-back]').forEach(function(b){b.addEventListener('click',function(){show(Math.max(0,cur-1));});});
   /* nettadresse fra slutt-feltet fylles inn i skjemaet */
@@ -862,13 +877,13 @@ var started=false,o=new IntersectionObserver(function(es){if(es[0].isIntersectin
     f.beskrivelse.value=briefText();
     if(!briefsOk()||!val('website')||!val('name')||!/^\S+@\S+\.\S+$/.test(val('email'))){err.style.display='block';return;}
     err.style.display='none';
-    var p={subject:'Ny bestilling: klipp 3D-film for '+price()+' kr',pakke:pakkeTxt(),antall:antall(),filmer:FILMS.join(','),stykkpris:unit(),formater:val('formater'),pris:price(),lead_source:LEAD_SOURCE,name:val('name'),email:val('email'),website:val('website'),
+    var p={subject:'Ny bestilling: klipp 3D-film for '+price()+' kr',pakke:pakkeTxt(),antall:antall(),filmer:FILMS.join(','),ekstraformater:xtra(),stykkpris:unit(),formater:val('formater'),pris:price(),lead_source:LEAD_SOURCE,name:val('name'),email:val('email'),website:val('website'),
       tema:val('tema'),kanal:val('kanal'),beskrivelse:val('beskrivelse'),
       comment:['[klipp 3D-film 99 kr]','Antall: '+antall()+' | Filmer: '+pakkeTxt()+' | Viser: '+(val('tema')||'-')+' | Formater: '+(val('formater')||'-')+' ('+price()+' kr)','Ønsker:\n'+val('beskrivelse')].join('\n'),
       page_url:location.href,user_agent:navigator.userAgent,ordre:'KL-'+Date.now().toString(36).toUpperCase().slice(-6)};
     postTo(LEAD_WEBHOOK,p);
     try{var a=JSON.parse(localStorage.getItem('klipp_bestillinger')||'[]');a.push(p);localStorage.setItem('klipp_bestillinger',JSON.stringify(a.slice(-20)));}catch(x){}
-    try{sessionStorage.setItem('klipp_navn',val('name'));sessionStorage.setItem('klipp_ordre',JSON.stringify({antall:p.antall,stykkpris:p.stykkpris,pakke:p.pakke,filmer:p.filmer,formater:p.formater,pris:p.pris,id:p.ordre,name:p.name,email:p.email,website:p.website,tema:p.tema,kanal:p.kanal,beskrivelse:p.beskrivelse}));}catch(x){}
+    try{sessionStorage.setItem('klipp_navn',val('name'));sessionStorage.setItem('klipp_ordre',JSON.stringify({antall:p.antall,stykkpris:p.stykkpris,pakke:p.pakke,filmer:p.filmer,ekstraformater:p.ekstraformater,formater:p.formater,pris:p.pris,id:p.ordre,name:p.name,email:p.email,website:p.website,tema:p.tema,kanal:p.kanal,beskrivelse:p.beskrivelse}));}catch(x){}
     setTimeout(function(){location.href='betaling.html';},300);
   });
 })();
