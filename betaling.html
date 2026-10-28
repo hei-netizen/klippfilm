@@ -244,6 +244,9 @@ var VIPPS_PA=true;
 var o=null;try{o=JSON.parse(sessionStorage.getItem('klipp_ordre')||'null');}catch(e){}
 /* ?demo=1 viser siden med en eksempelbestilling (for forhåndsvisning) */
 if(!o&&/[?&]demo=2/.test(location.search)){o={id:'KL-DEMO02',name:'Kari Nordmann',email:'kari@eksempel.no',website:'kaffebrenneriet.no',tema:'Et produkt',antall:2,filmer:'Kort,Medium',ekstraformater:1,pakke:'Kort + Medium',formater:'Film 1: Stående 9:16, Kvadrat 1:1 | Film 2: Stående 9:16',pris:308,beskrivelse:'Film 1 (Kort): Vis kaffen vår bli brent, mørkt og eksklusivt\nFilm 2 (Medium): Teamet vårt og hva vi står for, rolig og varmt'};}
+/* ?refusjonstest=<kode>: ekte betaling på 3 kr som Workeren refunderer straks (kun med riktig kode) */
+var RT=new URLSearchParams(location.search).get('refusjonstest');
+if(RT){o={id:'KL-REFTEST',name:'Test',email:'hei@klippfilm.no',website:'klippfilm.no',tema:'Refusjonstest',filmer:'Kort',pakke:'Kort',formater:'Stående 9:16',pris:3,beskrivelse:'Testbetaling, refunderes automatisk',refusjonstest:RT};}
 if(!o&&/[?&]demo=1/.test(location.search)){o={id:'KL-DEMO01',name:'Kari Nordmann',email:'kari@eksempel.no',website:'kaffebrenneriet.no',tema:'Et produkt',kanal:'Instagram og TikTok',beskrivelse:'Vis kaffen vår bli brent, mørkt og eksklusivt'};}
 if(!o){
   document.getElementById('app').innerHTML='<div class="nope"><h1>Vi finner ingen <span class="g">bestilling.</span></h1><p style="color:#6B6775">Start med å fortelle oss kort hva filmen skal vise, så kommer du hit etterpå.</p><a class="btn" href="index.html#bestill">Til bestillingen</a></div>';
