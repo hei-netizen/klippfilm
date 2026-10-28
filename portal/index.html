@@ -194,7 +194,7 @@ function card(o){
   var moves='';COLS.forEach(function(k){if(k[0]!==o.status)moves+='<button data-mv="'+esc(k[0])+'"'+(next&&k[0]===next[0]?' class="go"':'')+'>'+(next&&k[0]===next[0]?'→ ':'')+esc(k[0])+'</button>';});
   return '<div class="card'+(openId===o.ordre?' open':'')+'" data-id="'+esc(o.ordre)+'">'+
     '<div class="hd"><b>'+esc(o.navn||'Uten navn')+'</b><span class="pr">'+kr(o.pris)+'</span>'+
-    '<small>'+esc(o.antall)+' × '+esc(o.pakke)+' · '+esc(o.ordre)+'</small><small class="r">'+esc(o.mottatt.slice(5))+'</small></div>'+
+    '<small>'+(o.pakke.indexOf('+')>=0?esc(o.antall)+' filmer: '+esc(o.pakke):esc(o.antall)+' × '+esc(o.pakke))+' · '+esc(o.ordre)+'</small><small class="r">'+esc(o.mottatt.slice(5))+'</small></div>'+
     '<div class="bd"><div class="kv">'+
       '<span>Nettside</span><p>'+(web?'<a href="'+esc(web)+'" target="_blank" rel="noopener">'+esc(o.nettside)+'</a>':'-')+'</p>'+
       '<span>E-post</span><p><a href="mailto:'+esc(o.epost)+'?subject='+encodeURIComponent('Filmen din fra klipp ('+o.ordre+')')+'">'+esc(o.epost)+'</a></p>'+
