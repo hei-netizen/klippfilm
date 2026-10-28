@@ -21,7 +21,7 @@ body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:14p
   padding:max(12px,env(safe-area-inset-top)) 16px max(24px,env(safe-area-inset-bottom))}
 .wrap{max-width:980px;margin:0 auto;display:grid;grid-template-columns:minmax(0,1fr);gap:16px}
 .wrap>*{min-width:0}
-button,select,input{font:inherit;color:inherit;border-radius:0}
+button,select,input{font:inherit;color:inherit;border-radius:8px}
 a{color:var(--accent)}
 
 .bar{display:flex;flex-wrap:wrap;align-items:center;gap:8px 16px;border-bottom:2px solid var(--ink);padding-bottom:10px}
@@ -29,10 +29,10 @@ a{color:var(--accent)}
 .where{display:flex;align-items:center;gap:8px;flex-wrap:wrap;color:var(--muted);min-width:0}
 .where b{color:var(--ink)}
 .search{display:flex;gap:0;flex:1 1 220px;min-width:0}
-.search input{flex:1;min-width:0;border:1px solid var(--line);padding:6px 8px;background:#fff}
+.search input{flex:1;min-width:0;border:1px solid var(--line);padding:6px 10px;background:#fff;border-radius:8px 0 0 8px}
 .btn{background:#fff;border:1px solid var(--line);padding:6px 10px;cursor:pointer;white-space:nowrap}
 .btn:hover{border-color:var(--ink)}
-.search .btn{border-left:0}
+.search .btn{border-left:0;border-radius:0 8px 8px 0}
 .btn:focus-visible,select:focus-visible,input:focus-visible,tr.srow:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
 
 .opts{display:flex;flex-wrap:wrap;gap:8px 16px;align-items:center}
@@ -41,7 +41,7 @@ a{color:var(--accent)}
 .opts .btn{margin-left:auto}
 
 /* Beste valg */
-.pick{background:var(--accent);color:var(--accent-ink);padding:14px 16px;display:grid;gap:8px}
+.pick{background:var(--accent);color:var(--accent-ink);padding:16px 18px;border-radius:12px;display:grid;gap:8px}
 .pick .lbl{font-size:12px;text-transform:uppercase;letter-spacing:.06em;opacity:.85}
 .pick h2{margin:0;font-size:26px;line-height:1.1}
 .pick dl{margin:0;display:grid;grid-template-columns:auto 1fr;gap:3px 14px}
@@ -51,18 +51,28 @@ a{color:var(--accent)}
 .pick p{margin:0}
 
 /* Varseltabell *//* Varseltabell */
-.fc{background:#fff;border:1px solid var(--line);color:#222}
+.fc{background:#fff;border:1px solid var(--line);color:#222;border-radius:12px;overflow:hidden}
 .fc-head{padding:14px 16px 10px;display:grid;gap:4px}
 .fc-head h3{margin:0;font-size:20px;color:var(--ink)}
 .fc-head .sub{font-size:13px;color:var(--muted)}
 .fc-head .links{display:flex;gap:14px;flex-wrap:wrap;font-size:13px}
 .fc-head a{color:var(--accent)}
 .steps{display:flex;margin-top:4px}
+.steps .btn{border-radius:0}.steps .btn:first-child{border-radius:8px 0 0 8px}.steps .btn:last-child{border-radius:0 8px 8px 0}
 .steps .btn+.btn{border-left:0}
 .lang{display:flex}
+.lang .btn{border-radius:0}.lang .btn:first-child{border-radius:8px 0 0 8px}.lang .btn:last-child{border-radius:0 8px 8px 0}
 .lang .btn+.btn{border-left:0}
 .lang .btn.on,.steps .btn.on{background:var(--ink);color:#fff;border-color:var(--ink)}
-.fc-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch;border-top:1px solid var(--line)}
+.fc-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch;border-top:1px solid var(--line);scroll-behavior:smooth;scroll-snap-type:x proximity;scroll-padding-left:116px;cursor:grab;overscroll-behavior-x:contain}
+.fc-scroll.drag{cursor:grabbing;scroll-behavior:auto;scroll-snap-type:none;user-select:none}
+.fct tr.time td{scroll-snap-align:start}
+.fcnav{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-top:8px}
+.fcnav .btn{padding:5px 10px;border-radius:8px}
+.fcnav .btn.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+.fcnav .arrow{font-size:16px;line-height:1;padding:4px 11px}
+.fcnav .days{display:flex;gap:6px;flex-wrap:wrap}
+@media (prefers-reduced-motion:reduce){.fc-scroll{scroll-behavior:auto}}
 table.fct{border-collapse:collapse;font-family:"Helvetica Neue",Arial,sans-serif;font-size:13px;font-variant-numeric:tabular-nums;white-space:nowrap;width:max-content;color:#222}
 .fct th{text-transform:none;letter-spacing:0;color:#222;position:static;background:none;font-family:inherit}
 .fct td{min-width:52px;padding:2px 1px;text-align:center;vertical-align:middle}
@@ -101,7 +111,7 @@ table.fct{border-collapse:collapse;font-family:"Helvetica Neue",Arial,sans-serif
 
 /* Spotliste */
 h2.sec{margin:8px 0 0;font-size:16px}
-.tablewrap{overflow-x:auto;border:1px solid var(--line)}
+.tablewrap{overflow-x:auto;border:1px solid var(--line);border-radius:12px}
 table.spots{border-collapse:collapse;width:100%;font-size:13px;font-variant-numeric:tabular-nums}
 .spots th,.spots td{padding:6px 8px;text-align:left;border-bottom:1px solid var(--line);white-space:nowrap}
 .spots th{background:var(--soft);font-weight:700;font-size:12px}
@@ -115,7 +125,7 @@ table.spots{border-collapse:collapse;width:100%;font-size:13px;font-variant-nume
 .spots td.name small{display:block;font-weight:400;color:var(--muted)}
 .status{color:var(--muted);padding:16px 0}
 .err{color:#b3261e}
-.skel{height:120px;background:var(--soft)}
+.skel{height:120px;background:var(--soft);border-radius:12px}
 footer{font-size:12px;color:var(--muted)}
 </style>
 </head>
@@ -976,11 +986,17 @@ function renderForecast(r){
       <div class="sub">${esc(regionTxt(s.region))} · ${L("vender mot","faces")} ${compass(s.facing)} · ${driveTxt(r)} ${L("kjøring","drive")} · ${L("tidevann","tide")}: ${r.tideSrc==="Kartverket"?"Kartverket":L("modell","model")} · ${L("lokal tid","local time")}</div>
       <div class="links">${links(r)}</div>
       <div class="steps" role="group" aria-label="${L("Oppløsning","Resolution")}">${[[3,L("Hver 3. time","Every 3 hours")],[1,L("Hver time","Hourly")]].map(([v,t])=>`<button type="button" class="btn${step===v?" on":""}" data-step="${v}" aria-pressed="${step===v}">${t}</button>`).join("")}</div>
+      <div class="fcnav">
+        <button type="button" class="btn arrow" data-nav="-1" aria-label="${L("Bla bakover","Scroll back")}">‹</button>
+        <div class="days">${days.map((d,k)=>`<button type="button" class="btn" data-day="${k}">${dayLabel(d.ms,tz)}</button>`).join("")}</div>
+        <button type="button" class="btn arrow" data-nav="1" aria-label="${L("Bla fremover","Scroll forward")}">›</button>
+        ${r.best?`<button type="button" class="btn" data-nav="best">${L("Beste vindu","Best window")}</button>`:""}
+      </div>
     </div>
-    <div class="fc-scroll"><table class="fct">
+    <div class="fc-scroll" tabindex="0" aria-label="${L("Varseltabell, bla sidelengs","Forecast table, scroll sideways")}"><table class="fct">
       <thead><tr><th class="lab"></th>${dayHead}</tr></thead>
       <tbody>
-        ${row("", c=>`<td ${cls(c, c.dayIdx%2?"alt":"")}>${parts(c.ms,tz).hm.slice(0,2)}</td>`, "time")}
+        ${row("", c=>`<td ${cls(c, c.dayIdx%2?"alt":"")} data-d="${c.dayIdx}">${parts(c.ms,tz).hm.slice(0,2)}</td>`, "time")}
         ${row(`Rating<small>(${L("10 maks","max 10")})</small>`, c=>`<td ${cls(c)}>${starSvg(Math.round(c.raw))}</td>`, "sep")}
         ${row(L("Bølgehøyde (m)","Wave height (m)"), c=>`<td ${cls(c)}>${notch(c.dir, dec(c.h), waveBlue(c.h))}</td>`, "sep")}
         ${row(L("Retning","Direction"), c=>`<td ${cls(c,"dir")}>${compass(c.dir)}</td>`)}
@@ -1004,8 +1020,49 @@ function renderForecast(r){
     <p class="fc-note">${esc(spotNote(s))}</p>
   </div>`;
   el.querySelectorAll("[data-step]").forEach(btn=>btn.onclick=()=>{ state.step = +btn.dataset.step; store.set("step",state.step); renderForecast(r); });
-  const best = el.querySelector("td.best"), sc = el.querySelector(".fc-scroll");
-  if(best && sc) sc.scrollLeft = Math.max(0, best.offsetLeft - 150);
+  wireTable(el);
+}
+
+// Navigasjon i varseltabellen: dagknapper, piler, dra med mus, markering av synlig dag
+function wireTable(el){
+  const sc = el.querySelector(".fc-scroll"); if(!sc) return;
+  const lab = () => el.querySelector(".fct th.lab")?.offsetWidth || 100;
+  const timeCells = [...el.querySelectorAll(".fct tr.time td")];
+  const go = x => sc.scrollTo({left: Math.max(0, x), behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth"});
+  const toCell = td => td && go(td.offsetLeft - lab());
+  const best = el.querySelector(".fct tr.time td.best");
+  // Start ved beste vindu uten animasjon
+  if(best){ sc.style.scrollBehavior = "auto"; sc.scrollLeft = Math.max(0, best.offsetLeft - lab() - 52); sc.style.scrollBehavior = ""; }
+  el.querySelectorAll("[data-day]").forEach(b=>b.onclick=()=>toCell(timeCells.find(td=>td.dataset.d===b.dataset.day)));
+  el.querySelectorAll("[data-nav]").forEach(b=>b.onclick=()=>{
+    if(b.dataset.nav==="best") return best && go(best.offsetLeft - lab() - 52);
+    go(sc.scrollLeft + (+b.dataset.nav) * (sc.clientWidth - lab()) * 0.85);
+  });
+  const mark = () => {
+    const x = sc.scrollLeft + lab() + 4;
+    const td = timeCells.find(t => t.offsetLeft + t.offsetWidth > x) || timeCells[timeCells.length-1];
+    el.querySelectorAll("[data-day]").forEach(b=>b.classList.toggle("on", td && b.dataset.day===td.dataset.d));
+  };
+  sc.addEventListener("scroll", ()=>requestAnimationFrame(mark), {passive:true}); mark();
+  // Dra med musa (berøring og styreflate scroller som vanlig)
+  let drag = null;
+  sc.addEventListener("pointerdown", e=>{
+    if(e.pointerType!=="mouse" || e.button!==0 || e.target.closest("a,button")) return;
+    drag = {x:e.clientX, left:sc.scrollLeft, moved:false}; sc.setPointerCapture(e.pointerId);
+  });
+  sc.addEventListener("pointermove", e=>{
+    if(!drag) return;
+    const dx = e.clientX - drag.x;
+    if(!drag.moved && Math.abs(dx) > 3){ drag.moved = true; sc.classList.add("drag"); }
+    if(drag.moved) sc.scrollLeft = drag.left - dx;
+  });
+  const end = ()=>{ if(!drag) return; const moved = drag.moved; drag = null; sc.classList.remove("drag");
+    if(moved){ const x = sc.scrollLeft + lab(); const td = timeCells.find(t => t.offsetLeft + t.offsetWidth/2 > x); if(td) go(td.offsetLeft - lab()); } };
+  sc.addEventListener("pointerup", end); sc.addEventListener("pointercancel", end);
+  // Piltaster når tabellen har fokus
+  sc.addEventListener("keydown", e=>{
+    if(e.key==="ArrowRight"||e.key==="ArrowLeft"){ e.preventDefault(); go(sc.scrollLeft + (e.key==="ArrowRight"?1:-1) * (timeCells[0]?.offsetWidth||52) * 3); }
+  });
 }
 
 function render(){
