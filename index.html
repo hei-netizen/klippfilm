@@ -482,6 +482,14 @@ body,h1,h2,h3,.logo,button,input,textarea{font-family:'Schibsted Grotesk',system
 .fsingle .fbox{border:0;padding:0;background:none}
 .fsingle .fbox .fh{display:none}
 .fsingle .fbox .opt{background:var(--bg)}
+.kunder{padding:38px 0;border-bottom:1px solid var(--line);overflow:hidden;-webkit-mask-image:linear-gradient(90deg,transparent,#000 12%,#000 88%,transparent);mask-image:linear-gradient(90deg,transparent,#000 12%,#000 88%,transparent)}
+.kunder .spor{display:flex;width:max-content;animation:kunderRull 50s linear infinite}
+.kunder ul{display:flex;align-items:center;gap:72px;padding-right:72px;list-style:none;margin:0}
+.kunder img{height:30px;width:auto;display:block;opacity:.5}
+.kunder img.bred{height:21px}
+@keyframes kunderRull{to{transform:translateX(-50%)}}
+@media(max-width:700px){.kunder{padding:28px 0}.kunder ul{gap:44px;padding-right:44px}.kunder img{height:24px}.kunder img.bred{height:17px}}
+@media(prefers-reduced-motion:reduce){.kunder .spor{animation:none}}
 </style>
 </head>
 <body>
@@ -534,6 +542,9 @@ body,h1,h2,h3,.logo,button,input,textarea{font-family:'Schibsted Grotesk',system
   </div>
 </section>
 
+<!-- ===== kundelogoer (rullende bånd) ===== -->
+<div class="kunder" aria-label="Bedrifter vi har laget annonser for"><div class="spor"><ul><li><img src="img/kunder/badstugutta.png" alt="Badstugutta" class="bred"></li><li><img src="img/kunder/froyd.png" alt="Frøyd"></li><li><img src="img/kunder/generalfinans.png" alt="General Finans"></li><li><img src="img/kunder/idrt.png" alt="IDRT"></li><li><img src="img/kunder/leid.png" alt="Leid"></li><li><img src="img/kunder/mokki.png" alt="Mokki"></li><li><img src="img/kunder/qualipet.png" alt="QualiPet"></li><li><img src="img/kunder/raskflytting.png" alt="Rask Flytting"></li><li><img src="img/kunder/redz.png" alt="Redz"></li><li><img src="img/kunder/timbel.png" alt="Timbel"></li><li><img src="img/kunder/utvendigrenhold.png" alt="Utvendig Renhold"></li><li><img src="img/kunder/varmentilbake.png" alt="Varmekabelreparatøren" class="bred"></li><li><img src="img/kunder/veldigrent.png" alt="Veldigrent"></li></ul><ul aria-hidden="true"><li><img src="img/kunder/badstugutta.png" alt="" class="bred"></li><li><img src="img/kunder/froyd.png" alt=""></li><li><img src="img/kunder/generalfinans.png" alt=""></li><li><img src="img/kunder/idrt.png" alt=""></li><li><img src="img/kunder/leid.png" alt=""></li><li><img src="img/kunder/mokki.png" alt=""></li><li><img src="img/kunder/qualipet.png" alt=""></li><li><img src="img/kunder/raskflytting.png" alt=""></li><li><img src="img/kunder/redz.png" alt=""></li><li><img src="img/kunder/timbel.png" alt=""></li><li><img src="img/kunder/utvendigrenhold.png" alt=""></li><li><img src="img/kunder/varmentilbake.png" alt="" class="bred"></li><li><img src="img/kunder/veldigrent.png" alt=""></li></ul></div></div>
+
 <!-- ===== BESTILL ===== -->
 <section class="sec" id="bestill">
   <div class="wrap order">
@@ -584,7 +595,7 @@ body,h1,h2,h3,.logo,button,input,textarea{font-family:'Schibsted Grotesk',system
           <button type="button" class="back" data-back>&larr; Tilbake</button>
         </div>
       </form>
-      <p class="fine">Neste steg er betaling. Filmen kommer som en Drive-lenke på e-post innen 6 til 12 timer.</p>
+      <p class="fine">Neste steg er betaling. Filmen kommer som en Drive-lenke på e-post innen 6 til 24 timer.</p>
     </div>
   </div>
 </section>
@@ -631,7 +642,7 @@ body,h1,h2,h3,.logo,button,input,textarea{font-family:'Schibsted Grotesk',system
         <div><dt>Lengde</dt><dd>20 sekunder, 60 sekunder eller opptil 5 minutter</dd></div>
         <div><dt>Lyd</dt><dd>Lyddesign og musikk, ferdig mikset</dd></div>
         <div><dt>Avslutning</dt><dd>Logoen din, bygget i 3D</dd></div>
-        <div><dt>Levering</dt><dd>MP4 i Google Drive, innen 6 til 12 timer</dd></div>
+        <div><dt>Levering</dt><dd>MP4 i Google Drive, innen 6 til 24 timer</dd></div>
       </dl>
     </div>
   </div>
@@ -654,7 +665,7 @@ body,h1,h2,h3,.logo,button,input,textarea{font-family:'Schibsted Grotesk',system
       </div>
       <div class="sc rv d2">
         <div class="viz"><div class="file"><span class="th"><img src="img/vy-poster.jpg" alt=""></span><span><b>film_dinbedrift.mp4</b><small>Google Drive · 9:16</small></span><span class="ok"><svg viewBox="0 0 24 24" fill="none" stroke-width="3"><path d="M20 6L9 17l-5-5" stroke-linecap="round" stroke-linejoin="round"/></svg></span></div></div>
-        <span class="num">03</span><h3>Filmen kommer i Drive</h3><p>Ferdig 3D-film med lyd innen 6 til 12 timer, klar til å lastes opp der du vil.</p>
+        <span class="num">03</span><h3>Filmen kommer i Drive</h3><p>Ferdig 3D-film med lyd innen 6 til 24 timer, klar til å lastes opp der du vil.</p>
       </div>
     </div>
   </div>
@@ -724,13 +735,14 @@ body,h1,h2,h3,.logo,button,input,textarea{font-family:'Schibsted Grotesk',system
     <div class="faq rv d1">
       <details><summary>Hvorfor bare 99 kr?<span class="pm">+</span></summary><div class="ans">Vi er et lite team i Norge som bare lager motion graphics, og akkurat nå bygger vi porteføljen vår. Derfor lager vi filmer for prisen av en lunsj, så flere bedrifter får se hva vi kan.</div></details>
       <details><summary>Hvor lang kan filmen være?<span class="pm">+</span></summary><div class="ans">Kort er rundt 20 sekunder og koster 99 kr. Medium er opptil 60 sekunder og koster 199 kr. Lang er opptil 5 minutter og koster 299 kr. Ekstra formater koster 10 kr per stykk.</div></details>
-      <details><summary>Hvor raskt får jeg filmen?<span class="pm">+</span></summary><div class="ans">Forvent filmen innen 6 til 12 timer etter at du har betalt. Den kommer som en Drive-lenke på e-post.</div></details>
+      <details><summary>Hvor raskt får jeg filmen?<span class="pm">+</span></summary><div class="ans">Forvent filmen innen 6 til 24 timer etter at du har betalt. Den kommer som en Drive-lenke på e-post.</div></details>
       <details><summary>Kan jeg få filmen i flere formater?<span class="pm">+</span></summary><div class="ans">Ja. Stående 9:16 er med i prisen. Du kan legge til kvadrat 1:1, portrett 4:5 og liggende 16:9 for 10 kr per ekstra format. Du velger formatene når du bestiller.</div></details>
       <details><summary>Hva får jeg for 99 kr?<span class="pm">+</span></summary><div class="ans">En ferdig 3D-reklamefilm i stående format med lyd, laget for bedriften din. Du får den som en Drive-lenke på e-post og kan laste den ned og bruke den der du vil.</div></details>
       <details><summary>Hva trenger dere fra meg?<span class="pm">+</span></summary><div class="ans">Et par setninger om hva filmen skal vise, og adressen til nettsiden din. Logo, farger og det dere er kjent for henter vi derfra.</div></details>
       <details><summary>Må jeg filme noe selv?<span class="pm">+</span></summary><div class="ans">Nei. Filmene bygges i 3D, så vi trenger verken kamera, studio eller bilder fra deg.</div></details>
       <details><summary>Hvor kan jeg bruke filmen?<span class="pm">+</span></summary><div class="ans">Formatet passer til Instagram Reels, TikTok, Facebook, Snapchat og nettsiden din.</div></details>
       <details><summary>Har Equinor, DNB og de andre bestilt filmene?<span class="pm">+</span></summary><div class="ans">Nei. Vi laget dem på eget initiativ for å vise hva som går an. Merkene har ikke bestilt eller godkjent dem.</div></details>
+      <details><summary>Kan jeg bruke filmene til markedsføring?<span class="pm">+</span></summary><div class="ans">Ja, det kan du. Du kan bruke filmene til akkurat det du vil.</div></details>
     </div>
   </div>
 </section>
