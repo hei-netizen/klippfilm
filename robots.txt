@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+Disallow: /portal/
+Disallow: /betaling.html
+Disallow: /takk.html
+
+Sitemap: https://klippfilm.no/sitemap.xml
