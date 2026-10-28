@@ -171,7 +171,7 @@ body,h1,h2,h3,.logo,button,input,textarea{font-family:'Schibsted Grotesk',system
           <div class="row"><span>Nettside</span><p id="o-web"></p></div>
           <div class="row"><span>Filmen viser</span><p id="o-tema"></p></div>
           <div class="row"><span>Formater</span><p id="o-kanal"></p></div>
-          <div class="row"><span>Ønsket ditt</span><p class="q" id="o-besk"></p></div>
+          <div class="row"><span>Ønskene dine</span><p class="q" id="o-besk"></p></div>
           <div class="row"><span>Sendes til</span><p id="o-epost"></p></div>
         </div>
         <a class="edit" href="index.html#bestill">Endre bestillingen</a>
@@ -222,7 +222,7 @@ body,h1,h2,h3,.logo,button,input,textarea{font-family:'Schibsted Grotesk',system
    PAY_VIPPS_URL = Vipps-betalingslenke når Vipps-avtalen er på plass. */
 var STRIPE_PK='';
 var PAY_CARD_URL='';  /* (eldre, én pris) */
-/* Stripe Payment Links per pris (pakke + 10 kr per ekstra format), f.eks. {99:'https://buy.stripe.com/…',109:'…',199:'…'}. Brukes når siden ligger uten server (GitHub Pages). */
+/* Stripe Payment Links per stykkpris og antall, nøkkel «stykkpris x antall», f.eks. {'99x1':'https://buy.stripe.com/…','109x2':'…'}. Brukes når siden ligger uten server (GitHub Pages). */
 var PAY_LINKS={};
 var PAY_VIPPS_URL='';
 
@@ -235,11 +235,11 @@ if(!o){
   var set=function(id,v){document.getElementById(id).textContent=v||'-';};
   set('o-web',o.website);set('o-tema',o.tema);set('o-kanal',o.formater||o.kanal||'Stående 9:16');
   var PAKKE={Kort:99,Medium:199,Lang:299},LEN={Kort:'Rundt 20 sekunder',Medium:'Opptil 60 sekunder',Lang:'Opptil 5 minutter'},pk=o.pakke||'Kort';
-  var nF=(o.formater?o.formater.split(',').length:1),PRIS=o.pris||((PAKKE[pk]||99)+10*Math.max(0,nF-1));
-  document.querySelector('.prod b').textContent='3D-reklamefilm · '+pk;document.querySelector('.prod small').textContent=LEN[pk]+' · lyd og musikk · logoen din i 3D';document.querySelector('.prod .pr').textContent=(PAKKE[pk]||99)+' kr';
+  var nF=(o.formater?o.formater.split(',').length:1),Q=o.antall||1,UNIT=o.stykkpris||((PAKKE[pk]||99)+10*Math.max(0,nF-1)),PRIS=o.pris||UNIT*Q;
+  document.querySelector('.prod b').textContent=(Q>1?Q+' × ':'')+'3D-reklamefilm · '+pk;document.querySelector('.prod small').textContent=LEN[pk]+' · lyd og musikk · logoen din i 3D';document.querySelector('.prod .pr').textContent=(PAKKE[pk]||99)+' kr'+(Q>1?' / stk':'');
   document.querySelectorAll('.js-pris').forEach(function(e){e.textContent=PRIS;});
-  if(nF>1){document.getElementById('xtra').style.display='flex';document.getElementById('xtraTxt').textContent=(nF-1)+' ekstra format'+(nF>2?'er':'')+' × 10 kr';document.getElementById('xtraPr').textContent='+'+(nF-1)*10+' kr';}
-  PAY_CARD_URL=PAY_LINKS[PRIS]||PAY_CARD_URL;set('o-besk','«'+o.beskrivelse+'»');set('o-epost',o.email);
+  if(nF>1){document.getElementById('xtra').style.display='flex';document.getElementById('xtraTxt').textContent=(nF-1)+' ekstra format'+(nF>2?'er':'')+' × 10 kr'+(Q>1?' × '+Q+' filmer':'');document.getElementById('xtraPr').textContent='+'+(nF-1)*10*Q+' kr';}
+  PAY_CARD_URL=PAY_LINKS[UNIT+'x'+Q]||PAY_CARD_URL;document.getElementById('o-besk').innerHTML=(o.beskrivelse||'-').split('\n').map(function(l){return '«'+l.replace(/[<>&]/g,function(c){return {'<':'&lt;','>':'&gt;','&':'&amp;'}[c];})+'»';}).join('<br>');set('o-epost',o.email);
   document.getElementById('o-id').textContent='Ordrenummer '+o.id;
   var first=(o.name||'').trim().split(/\s+/)[0];if(first)document.getElementById('hiName').textContent=first+', så setter vi i gang.';
   try{if(window.gtag)gtag('event','begin_checkout',{value:99,currency:'NOK',transaction_id:o.id});}catch(e){}

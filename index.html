@@ -442,6 +442,18 @@ body,h1,h2,h3,.logo,button,input,textarea{font-family:'Schibsted Grotesk',system
 .tier .amt span{font-size:.36em!important}
 .tier .fit{display:block;color:rgba(255,255,255,.55);font-size:13.5px}
 @media(max-width:760px){.tiers{grid-template-columns:1fr}}
+
+/* antall filmer + beskrivelse per film */
+.qty{display:flex;align-items:center;justify-content:space-between;border:1.5px solid var(--line);border-radius:var(--rs);padding:6px;margin-bottom:12px;background:var(--bg)}
+.qty span{font-family:var(--disp);font-weight:800;font-size:19px;letter-spacing:-0.02em}
+.qb{width:44px;height:44px;border-radius:10px;border:0;background:#fff;box-shadow:0 1px 0 rgba(0,0,0,.06),0 0 0 1px rgba(17,17,17,.08);font-size:22px;font-weight:600;cursor:pointer;color:var(--ink)}
+.qb:disabled{opacity:.35;cursor:not-allowed}
+.tip{font-size:13.5px;line-height:1.5;color:var(--ink2);background:#FDF0EE;border-radius:12px;padding:11px 13px;margin-bottom:12px}
+.tip b{color:var(--coral)}
+.brief label{display:flex;justify-content:space-between;font-size:13px;font-weight:700;margin-bottom:6px;color:var(--ink2)}
+.brief label i{font-style:normal;font-weight:600;color:var(--muted)}
+.brief textarea{min-height:118px;line-height:1.45}
+.brief textarea::placeholder{color:#9a97a2}
 </style>
 </head>
 <body>
@@ -547,8 +559,10 @@ body,h1,h2,h3,.logo,button,input,textarea{font-family:'Schibsted Grotesk',system
           <button type="button" class="back" data-back>&larr; Tilbake</button>
         </div>
         <div class="step" data-step="3">
-          <h3>Fortell oss kort hva du vil ha</h3>
-          <div class="fld"><textarea name="beskrivelse" rows="3" placeholder="F.eks. vis kaffen vår bli brent, mørkt og eksklusivt" required></textarea></div>
+          <h3>Hvor mange filmer vil du ha?</h3>
+          <input type="hidden" name="antall" value="1"><input type="hidden" name="beskrivelse">
+          <div class="qty"><button type="button" class="qb" id="qMinus" aria-label="Færre filmer">&minus;</button><span id="qVal">1 film</span><button type="button" class="qb" id="qPlus" aria-label="Flere filmer">+</button></div>
+          <div id="filmBriefs"></div>
           <div class="fld"><label for="f-web">Nettsiden din</label><input id="f-web" type="text" name="website" placeholder="dinbedrift.no" inputmode="url" autocomplete="url" required></div>
           <div class="fld"><label for="f-navn">Navn</label><input id="f-navn" type="text" name="name" placeholder="Fornavn og etternavn" autocomplete="name" required></div>
           <div class="fld"><label for="f-epost">E-post</label><input id="f-epost" type="email" name="email" placeholder="Hit sender vi Drive-lenken" autocomplete="email" required></div>
@@ -790,13 +804,28 @@ var started=false,o=new IntersectionObserver(function(es){if(es[0].isIntersectin
   var updPrice;
   function fmts(){return [].slice.call(f.querySelectorAll('.opt.fmt.on')).map(function(b){return b.getAttribute('data-v');});}
   var PAKKE={Kort:99,Medium:199,Lang:299};
-  function price(){return (PAKKE[f.pakke.value]||BASE)+EXTRA*Math.max(0,fmts().length-1);}
+  function unit(){return (PAKKE[f.pakke.value]||BASE)+EXTRA*Math.max(0,fmts().length-1);}
+  function price(){return unit()*(parseInt(f.antall.value,10)||1);}
   updPrice=function(){var n=fmts().length,p=price();f.formater.value=fmts().join(', ');
     document.getElementById('fmtTxt').textContent=n<=1?'1 format inkludert':n+' formater (1 inkludert + '+(n-1)+' × 10 kr)';
     document.getElementById('fmtSum').textContent=p+' kr';
-    document.querySelectorAll('.price-tag').forEach(function(t){t.innerHTML=p+' kr <small>'+(n>1?n+' formater':'per film')+'</small>';});
-    var sb=document.getElementById('submitTxt');if(sb)sb.textContent='Bestill film for '+p+' kr';
+    var q=parseInt(f.antall.value,10)||1;document.querySelectorAll('.price-tag').forEach(function(t){t.innerHTML=p+' kr <small>'+(q>1?q+' filmer':(n>1?n+' formater':'per film'))+'</small>';});
+    var sb=document.getElementById('submitTxt');if(sb)sb.textContent='Bestill '+(q>1?q+' filmer':'film')+' for '+p+' kr';
     document.getElementById('fmtNext').disabled=n===0;document.getElementById('fmtNext').style.opacity=n===0?.4:1;};
+  /* antall filmer, egen beskrivelse per film */
+  var MAXF=5,PH=['Vis kaffen vår bli brent, mørkt og eksklusivt. Avslutt med logoen og «Bestill på nett».','Vis hvordan kunden bestiller i appen vår, lyst og enkelt.','Kampanjen vår for sommeren, med produktet i fokus.','Teamet vårt og hva vi står for, rolig og varmt.','Et nytt produkt som lanseres, energisk og tydelig.'];
+  var briefs=document.getElementById('filmBriefs'),saved=[];
+  function antall(){return parseInt(f.antall.value,10)||1;}
+  function renderBriefs(){var n=antall();[].slice.call(briefs.querySelectorAll('textarea')).forEach(function(t,i){saved[i]=t.value;});
+    briefs.innerHTML='';for(var i=0;i<n;i++){var d=document.createElement('div');d.className='fld brief';
+      d.innerHTML='<label for="b'+i+'">'+(n>1?'Film '+(i+1)+': hva skal den handle om?':'Hva skal filmen handle om?')+'<i>'+(n>1?'Film '+(i+1)+' av '+n:'')+'</i></label><textarea id="b'+i+'" rows="4" placeholder="Jo mer spesifikk du er, jo bedre blir filmen. Skriv hva den skal vise, stemningen og hva seerne skal gjøre etterpå.&#10;&#10;F.eks. '+PH[i%PH.length].replace(/"/g,'&quot;')+'"></textarea>';
+      briefs.appendChild(d);d.querySelector('textarea').value=saved[i]||'';}
+    document.getElementById('qVal').textContent=n+(n>1?' filmer':' film');document.getElementById('qMinus').disabled=n<=1;document.getElementById('qPlus').disabled=n>=MAXF;}
+  document.getElementById('qMinus').addEventListener('click',function(){f.antall.value=Math.max(1,antall()-1);renderBriefs();updPrice();});
+  document.getElementById('qPlus').addEventListener('click',function(){f.antall.value=Math.min(MAXF,antall()+1);renderBriefs();updPrice();});
+  renderBriefs();
+  function briefText(){return [].slice.call(briefs.querySelectorAll('textarea')).map(function(t,i,a){return (a.length>1?'Film '+(i+1)+': ':'')+t.value.trim();}).join('\n');}
+  function briefsOk(){return [].slice.call(briefs.querySelectorAll('textarea')).every(function(t){return t.value.trim().length>0;});}
   f.querySelectorAll('.opt.fmt').forEach(function(b){b.addEventListener('click',function(){b.classList.toggle('on');updPrice();});});
   document.getElementById('fmtNext').addEventListener('click',function(){if(fmts().length)show(3);});
   updPrice();
@@ -809,15 +838,16 @@ var started=false,o=new IntersectionObserver(function(es){if(es[0].isIntersectin
     e.preventDefault();
     if(f.company.value){location.href='takk.html';return;}
     var err=document.getElementById('formErr');
-    if(!val('beskrivelse')||!val('website')||!val('name')||!/^\S+@\S+\.\S+$/.test(val('email'))){err.style.display='block';return;}
+    f.beskrivelse.value=briefText();
+    if(!briefsOk()||!val('website')||!val('name')||!/^\S+@\S+\.\S+$/.test(val('email'))){err.style.display='block';return;}
     err.style.display='none';
-    var p={subject:'Ny bestilling: klipp 3D-film for '+price()+' kr',pakke:val('pakke')||'Kort',formater:val('formater'),pris:price(),lead_source:LEAD_SOURCE,name:val('name'),email:val('email'),website:val('website'),
+    var p={subject:'Ny bestilling: klipp 3D-film for '+price()+' kr',pakke:val('pakke')||'Kort',antall:parseInt(val('antall'),10)||1,stykkpris:unit(),formater:val('formater'),pris:price(),lead_source:LEAD_SOURCE,name:val('name'),email:val('email'),website:val('website'),
       tema:val('tema'),kanal:val('kanal'),beskrivelse:val('beskrivelse'),
-      comment:['[klipp 3D-film 99 kr]','Pakke: '+(val('pakke')||'Kort')+' | Viser: '+(val('tema')||'-')+' | Formater: '+(val('formater')||'-')+' ('+price()+' kr)','Ønske: '+val('beskrivelse')].join('\n'),
+      comment:['[klipp 3D-film 99 kr]','Antall: '+(val('antall')||1)+' | Pakke: '+(val('pakke')||'Kort')+' | Viser: '+(val('tema')||'-')+' | Formater: '+(val('formater')||'-')+' ('+price()+' kr)','Ønsker:\n'+val('beskrivelse')].join('\n'),
       page_url:location.href,user_agent:navigator.userAgent,ordre:'KL-'+Date.now().toString(36).toUpperCase().slice(-6)};
     postTo(LEAD_WEBHOOK,p);
     try{var a=JSON.parse(localStorage.getItem('klipp_bestillinger')||'[]');a.push(p);localStorage.setItem('klipp_bestillinger',JSON.stringify(a.slice(-20)));}catch(x){}
-    try{sessionStorage.setItem('klipp_navn',val('name'));sessionStorage.setItem('klipp_ordre',JSON.stringify({pakke:p.pakke,formater:p.formater,pris:p.pris,id:p.ordre,name:p.name,email:p.email,website:p.website,tema:p.tema,kanal:p.kanal,beskrivelse:p.beskrivelse}));}catch(x){}
+    try{sessionStorage.setItem('klipp_navn',val('name'));sessionStorage.setItem('klipp_ordre',JSON.stringify({antall:p.antall,stykkpris:p.stykkpris,pakke:p.pakke,formater:p.formater,pris:p.pris,id:p.ordre,name:p.name,email:p.email,website:p.website,tema:p.tema,kanal:p.kanal,beskrivelse:p.beskrivelse}));}catch(x){}
     setTimeout(function(){location.href='betaling.html';},300);
   });
 })();
