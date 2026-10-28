@@ -1,0 +1,1045 @@
+<!doctype html>
+<html lang="nb">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Bølgejakt">
+<meta name="theme-color" content="#0f2a3d">
+<title>Bølgejakt</title>
+<style>
+/* Enkel og stram: rette kanter, vanlig skrift, én blå farge. Beste valg → varseltabell → spotliste. */
+:root{
+  --bg:#ffffff; --surface:#ffffff; --line:#cfd4da; --soft:#f1f3f5;
+  --ink:#1b1f24; --muted:#5f6973; --accent:#2a4fc9; --accent-ink:#ffffff;
+  --body:"Helvetica Neue",Helvetica,Arial,sans-serif;
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:14px;line-height:1.4;
+  padding:max(12px,env(safe-area-inset-top)) 16px max(24px,env(safe-area-inset-bottom))}
+.wrap{max-width:980px;margin:0 auto;display:grid;grid-template-columns:minmax(0,1fr);gap:16px}
+.wrap>*{min-width:0}
+button,select,input{font:inherit;color:inherit;border-radius:0}
+a{color:var(--accent)}
+
+.bar{display:flex;flex-wrap:wrap;align-items:center;gap:8px 16px;border-bottom:2px solid var(--ink);padding-bottom:10px}
+.brand{margin:0;font-size:20px;font-weight:700;letter-spacing:-.01em}
+.where{display:flex;align-items:center;gap:8px;flex-wrap:wrap;color:var(--muted);min-width:0}
+.where b{color:var(--ink)}
+.search{display:flex;gap:0;flex:1 1 220px;min-width:0}
+.search input{flex:1;min-width:0;border:1px solid var(--line);padding:6px 8px;background:#fff}
+.btn{background:#fff;border:1px solid var(--line);padding:6px 10px;cursor:pointer;white-space:nowrap}
+.btn:hover{border-color:var(--ink)}
+.search .btn{border-left:0}
+.btn:focus-visible,select:focus-visible,input:focus-visible,tr.srow:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+
+.opts{display:flex;flex-wrap:wrap;gap:8px 16px;align-items:center}
+.opts label{display:flex;align-items:center;gap:6px;color:var(--muted)}
+.opts select{border:1px solid var(--line);background:#fff;padding:5px 6px;color:var(--ink)}
+.opts .btn{margin-left:auto}
+
+/* Beste valg */
+.pick{background:var(--accent);color:var(--accent-ink);padding:14px 16px;display:grid;gap:8px}
+.pick .lbl{font-size:12px;text-transform:uppercase;letter-spacing:.06em;opacity:.85}
+.pick h2{margin:0;font-size:26px;line-height:1.1}
+.pick dl{margin:0;display:grid;grid-template-columns:auto 1fr;gap:3px 14px}
+.pick dt{opacity:.8}
+.pick dd{margin:0;font-weight:700}
+.pick a{color:#fff}
+.pick p{margin:0}
+
+/* Varseltabell *//* Varseltabell */
+.fc{background:#fff;border:1px solid var(--line);color:#222}
+.fc-head{padding:14px 16px 10px;display:grid;gap:4px}
+.fc-head h3{margin:0;font-size:20px;color:var(--ink)}
+.fc-head .sub{font-size:13px;color:var(--muted)}
+.fc-head .links{display:flex;gap:14px;flex-wrap:wrap;font-size:13px}
+.fc-head a{color:var(--accent)}
+.fc-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch;border-top:1px solid var(--line)}
+table.fct{border-collapse:collapse;font-family:"Helvetica Neue",Arial,sans-serif;font-size:13px;font-variant-numeric:tabular-nums;white-space:nowrap;width:max-content;color:#222}
+.fct th{text-transform:none;letter-spacing:0;color:#222;position:static;background:none;font-family:inherit}
+.fct td{min-width:52px;padding:2px 1px;text-align:center;vertical-align:middle}
+.fct th.lab{position:sticky !important;left:0;z-index:2;background:#fff;text-align:right;padding:3px 8px;min-width:100px;font-weight:400;font-size:12px;color:#333;border-right:1px solid #c9cdd2;line-height:1.2}
+.fct th.lab small{display:block;font-size:10px;color:#666}
+.fct th.day{text-align:center;font-size:14px;font-weight:700;line-height:1.15;padding:6px 0 2px;border-left:1px solid #c9cdd2;background:#fff}
+.fct th.day span{display:block;font-weight:700}
+.fct th.day.alt,.fct tr.time td.alt{background:#eceef1}
+.fct td.dstart{border-left:1px solid #c9cdd2}
+.fct tr.time td{font-size:13px;color:#222;padding:2px 1px 6px}
+.fct tr.sep td,.fct tr.sep th{border-top:1px solid #e3e6ea}
+.fct td.best{box-shadow:inset 2px 0 0 var(--accent),inset -2px 0 0 var(--accent)}
+.fct tr.time td.best{box-shadow:inset 2px 0 0 var(--accent),inset -2px 0 0 var(--accent),inset 0 2px 0 var(--accent)}
+.fct tr:last-child td.best{box-shadow:inset 2px 0 0 var(--accent),inset -2px 0 0 var(--accent),inset 0 -2px 0 var(--accent)}
+.fct svg{display:block;margin:0 auto}
+.fct td.dir{font-size:13px;color:#222;padding-top:0}
+.fct td.per{font-weight:700;font-size:14px}
+.fct td.graph{padding:0;height:78px;vertical-align:bottom;background:linear-gradient(#fdfdfd,#b9bcc0)}
+.fct td.kj{color:#fff;font-weight:700;font-size:13px;padding:4px 1px}
+.fct td.ws{font-size:12px;line-height:1.1;height:40px;padding:2px}
+.ws-off{background:#3c9b47;color:#fff}.ws-xoff{background:#8cc152;color:#14310f}.ws-x{background:#c9cdd1;color:#222}
+.ws-xon{background:#8b9097;color:#fff}.ws-on{background:#5b6068;color:#fff}.ws-calm{background:#e6f2df;color:#2b4a24}
+.fct td.tide{font-size:11px;line-height:1.25;background:#f4f8fd}
+.fct td.tide b{display:block;color:#2f62c0;font-weight:700}
+.fct td.wx{font-size:22px;line-height:1;height:34px}
+.fct td.temp{font-weight:700}
+.fct td.rain{color:#2f62c0;font-size:12px}
+.fct tr.sunrise td{background:#fbf3a0;font-size:12px;font-weight:700;height:20px}
+.fct tr.sunset td{background:#151515;color:#fff;font-size:12px;font-weight:700;height:20px}
+.fct tr.sunrise th,.fct tr.sunset th{font-size:16px}
+.fc-legend{display:flex;flex-wrap:wrap;gap:6px 14px;padding:10px 16px 14px;font-size:11px;color:var(--muted);align-items:center}
+
+.fc-note{padding:0 16px 12px;font-size:12px;color:var(--muted);margin:0}
+
+/* Spotliste */
+h2.sec{margin:8px 0 0;font-size:16px}
+.tablewrap{overflow-x:auto;border:1px solid var(--line)}
+table.spots{border-collapse:collapse;width:100%;font-size:13px;font-variant-numeric:tabular-nums}
+.spots th,.spots td{padding:6px 8px;text-align:left;border-bottom:1px solid var(--line);white-space:nowrap}
+.spots th{background:var(--soft);font-weight:700;font-size:12px}
+.spots td.r{padding:2px 4px;width:40px}
+.spots td.r svg{display:block}
+.spots tr.srow{cursor:pointer}
+.spots tr.srow:hover td{background:var(--soft)}
+.spots tr.sel td{background:#e7edfb}
+.spots tr.out td{color:#9aa1a8}
+.spots td.name{font-weight:700;white-space:normal;min-width:130px}
+.spots td.name small{display:block;font-weight:400;color:var(--muted)}
+.status{color:var(--muted);padding:16px 0}
+.err{color:#b3261e}
+.skel{height:120px;background:var(--soft)}
+footer{font-size:12px;color:var(--muted)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="bar">
+    <h1 class="brand">Bølgejakt</h1>
+    <div class="where"><span id="whereTxt">Finner posisjonen din …</span>
+      <button class="btn" id="gps" type="button">Min posisjon</button></div>
+    <form class="search" id="searchForm">
+      <input id="q" type="search" placeholder="Søk sted" autocomplete="off" aria-label="Søk sted">
+      <button class="btn" type="submit">Søk</button>
+    </form>
+  </header>
+
+  <div class="opts">
+    <label for="skill">Nivå
+      <select id="skill">
+        <option value="nybegynner">Nybegynner</option>
+        <option value="middels" selected>Middels</option>
+        <option value="erfaren">Erfaren</option>
+      </select></label>
+    <label for="maxDrive">Maks kjøretid
+      <select id="maxDrive">
+        <option value="1">1 time</option>
+        <option value="2">2 timer</option>
+        <option value="4" selected>4 timer</option>
+        <option value="8">8 timer</option>
+      </select></label>
+    <label for="when">Når
+      <select id="when">
+        <option value="today">I dag</option>
+        <option value="tomorrow">I morgen</option>
+        <option value="3d" selected>Neste 3 døgn</option>
+      </select></label>
+    <button class="btn" id="refresh" type="button">Oppdater</button>
+  </div>
+
+  <section id="hero"><div class="skel"></div></section>
+
+  <section id="fc"></section>
+
+  <h2 class="sec">Spots i nærheten</h2>
+  <div id="list"><div class="status">Finner spots …</div></div>
+
+  <footer>Data: Open-Meteo, Kartverket, OpenStreetMap/OSRM. Klokkeslett er lokal tid ved spoten. <span id="stamp"></span></footer>
+</div>
+
+<script>
+const DIRS = ["N","NNØ","NØ","ØNØ","Ø","ØSØ","SØ","SSØ","S","SSV","SV","VSV","V","VNV","NV","NNV"];
+const compass = d => DIRS[Math.round(((d%360)+360)%360/22.5)%16];
+// ---------- Håndlagde norske spots ----------
+// facing = retningen stranden vender mot havet (grader). swell = sektor bølgene må komme FRA [fra, til] med klokka.
+const CURATED = [
+  {id:"sola",  name:"Solastranden", region:"Jæren", lat:58.884, lon:5.596, facing:270, swell:[210,320], tide:"alle", max:2.8, note:"Lang sandstrand nær flyplassen. Tåler lite, best på små til mellomstore dager."},
+  {id:"hellesto",name:"Hellestø",   region:"Jæren", lat:58.840, lon:5.555, facing:260, swell:[200,310], tide:"mid",  max:3.0, note:"Populær strandbrekk med flere topper. Fin for alle nivå på mindre dager."},
+  {id:"bore",  name:"Borestranden", region:"Jæren", lat:58.797, lon:5.548, facing:255, swell:[200,300], tide:"alle", max:3.0, note:"Mye plass, flere sandbanker. Østavind gir rene forhold."},
+  {id:"reve",  name:"Reve (Point Perfect)", region:"Jæren", lat:58.762, lon:5.517, facing:240, swell:[200,290], tide:"mid", max:4.0, note:"Rev og stein. For erfarne, tåler større swell enn strendene."},
+  {id:"orre",  name:"Orrestranda",  region:"Jæren", lat:58.728, lon:5.525, facing:250, swell:[200,300], tide:"alle", max:3.0, note:"Lang strand, sjelden folksomt."},
+  {id:"brusand",name:"Brusand",     region:"Jæren", lat:58.535, lon:5.735, facing:225, swell:[180,280], tide:"alle", max:2.8, note:"Litt mer skjermet for nordvest. Fungerer ofte når nordre Jæren er for stort."},
+  {id:"ogna",  name:"Ognastranda",  region:"Jæren", lat:58.517, lon:5.783, facing:215, swell:[180,270], tide:"alle", max:2.8, note:"Elveos og sandbanker. Liker sørvest."},
+  {id:"lista", name:"Lista",        region:"Sørlandet", lat:58.109, lon:6.568, facing:250, swell:[190,300], tide:"alle", max:3.2, note:"Flere strender og rev rundt Lista fyr. Velg strand etter vinden når du er der."},
+  {id:"mandal",name:"Sjøsanden, Mandal", region:"Sørlandet", lat:58.018, lon:7.468, facing:185, swell:[150,230], tide:"alle", max:2.0, note:"Trenger kraftig sørlig swell. Sjelden, men nær for de på Sørlandet."},
+  {id:"saltstein",name:"Saltstein", region:"Østlandet", lat:58.968, lon:9.868, facing:200, swell:[160,250], tide:"alle", max:2.5, note:"Østlandets mest kjente spot. Steinstrand, virker på sørvest-kuling."},
+  {id:"verdensende",name:"Verdens Ende", region:"Østlandet", lat:59.068, lon:10.425, facing:190, swell:[150,240], tide:"alle", max:2.2, note:"Svaberg og stein ytterst på Tjøme. Trenger sør/sørvest vindsjø."},
+  {id:"hoddevik",name:"Hoddevik",   region:"Stad", lat:62.120, lon:5.148, facing:330, swell:[250,20], tide:"alle", max:3.0, note:"Vestlandets surfehovedstad. Bukta tar imot nordvest og vest-swell."},
+  {id:"ervik", name:"Ervik",        region:"Stad", lat:62.168, lon:5.118, facing:300, swell:[240,10], tide:"mid", max:3.2, note:"Mer åpen enn Hoddevik. Best på mindre dager og fralandsvind fra øst/sørøst."},
+  {id:"unstad",name:"Unstad",       region:"Lofoten", lat:68.271, lon:13.585, facing:315, swell:[250,30], tide:"mid", max:4.0, note:"Pointbreak og strand. Tidevannet betyr mye her."},
+  {id:"flakstad",name:"Flakstad",   region:"Lofoten", lat:68.102, lon:13.233, facing:345, swell:[280,40], tide:"alle", max:3.0, note:"Lang sandstrand ved kirka. Snill når Unstad er for stort."}
+].map(s=>({...s, kind:"surf", curated:true, tideApi:true}));
+
+// ---------- Kjente surfespots i resten av verden ----------
+// navn|breddegrad|lengdegrad|område|retning mot havet (grader, omtrentlig)|eksponering 0–1|maks høyde m|bruddkvalitet 0–1|merknad (de fire siste er valgfrie)
+const WORLD_RAW = `Klitmøller|57.040|8.490|Danmark|315
+Hanstholm|57.120|8.620|Danmark|340
+Vorupør|56.960|8.360|Danmark|280
+Hvide Sande|56.000|8.120|Danmark|270
+Løkken|57.370|9.710|Danmark|300
+Torö|58.820|17.840|Sverige|170
+Mölle|56.280|12.490|Sverige|250
+Apelviken|57.090|12.240|Sverige|230
+Tylösand|56.650|12.730|Sverige|250
+Westerland, Sylt|54.910|8.300|Tyskland|280
+Scheveningen|52.110|4.270|Nederland|300
+Zandvoort|52.370|4.520|Nederland|285
+Wijk aan Zee|52.490|4.590|Nederland|285
+Fistral, Newquay|50.418|-5.100|England|300
+Watergate Bay|50.445|-5.040|England|290
+Polzeath|50.574|-4.920|England|315
+Croyde|51.130|-4.240|England|285
+Woolacombe|51.170|-4.210|England|270
+Saunton Sands|51.110|-4.220|England|270
+Sennen Cove|50.070|-5.700|England|300
+Praa Sands|50.100|-5.390|England|190
+Bude|50.830|-4.550|England|275
+Bournemouth|50.716|-1.870|England|160
+Saltburn|54.585|-0.970|England|30
+Tynemouth|55.020|-1.420|England|90
+Freshwater West|51.650|-5.060|Wales|260
+Llangennith|51.600|-4.290|Wales|270
+Thurso East|58.600|-3.510|Skottland|0
+Bundoran|54.480|-8.280|Irland|320
+Mullaghmore|54.470|-8.450|Irland|0
+Strandhill|54.270|-8.610|Irland|270
+Easkey|54.290|-8.960|Irland|330
+Lahinch|52.930|-9.350|Irland|270
+Inch Beach|52.130|-9.980|Irland|250
+Tramore|52.160|-7.140|Irland|180
+Portrush|55.200|-6.660|Nord-Irland|0
+La Gravière, Hossegor|43.665|-1.440|Frankrike|275
+Les Estagnots, Seignosse|43.700|-1.440|Frankrike|275
+Capbreton|43.645|-1.450|Frankrike|275
+Grande Plage, Biarritz|43.485|-1.560|Frankrike|300
+Anglet|43.500|-1.530|Frankrike|285
+Guéthary|43.430|-1.610|Frankrike|315
+Moliets|43.850|-1.390|Frankrike|275
+Mimizan|44.210|-1.300|Frankrike|275
+Biscarrosse|44.450|-1.250|Frankrike|275
+Lacanau|45.000|-1.200|Frankrike|275
+Le Porge|44.890|-1.200|Frankrike|275
+Montalivet|45.380|-1.160|Frankrike|275
+Les Sables-d'Olonne|46.490|-1.790|Frankrike|220
+Quiberon, Côte Sauvage|47.480|-3.150|Frankrike|255
+La Torche|47.840|-4.350|Frankrike|250
+Zurriola, San Sebastián|43.326|-1.975|Spania|0
+Zarautz|43.287|-2.170|Spania|0
+Mundaka|43.408|-2.700|Spania|330
+Sopelana|43.390|-2.990|Spania|330
+Somo|43.460|-3.740|Spania|0
+Rodiles|43.530|-5.370|Spania|0
+Salinas|43.570|-5.950|Spania|330
+Pantín|43.640|-8.110|Spania|330
+Razo|43.300|-8.700|Spania|300
+El Palmar|36.240|-6.070|Spania|230
+Famara|29.120|-13.560|Lanzarote|315
+La Santa|29.110|-13.650|Lanzarote|330
+El Cotillo|28.680|-14.010|Fuerteventura|280
+Majanicho|28.730|-13.940|Fuerteventura|0
+Playa de las Américas|28.060|-16.730|Tenerife|220
+El Confital|28.160|-15.440|Gran Canaria|330
+Las Canteras|28.140|-15.430|Gran Canaria|300
+Ribeira d'Ilhas, Ericeira|38.988|-9.420|Portugal|285
+Coxos, Ericeira|38.998|-9.425|Portugal|280
+Foz do Lizandro|38.940|-9.410|Portugal|260
+Supertubos, Peniche|39.345|-9.360|Portugal|230
+Baleal|39.375|-9.340|Portugal|330
+Praia do Norte, Nazaré|39.610|-9.080|Portugal|270
+Guincho|38.730|-9.470|Portugal|270
+Carcavelos|38.680|-9.335|Portugal|190
+Costa da Caparica|38.640|-9.240|Portugal|260
+Arrifana|37.290|-8.870|Portugal|270
+Amado|37.170|-8.900|Portugal|270
+Tonel, Sagres|37.000|-8.940|Portugal|240
+Cabedelo, Figueira da Foz|40.130|-8.870|Portugal|270
+Espinho|41.000|-8.650|Portugal|270
+Matosinhos|41.170|-8.690|Portugal|270
+Jardim do Mar|32.730|-17.210|Madeira|220
+Levanto|44.170|9.610|Italia|230
+Varazze|44.360|8.580|Italia|180
+Santa Marinella|42.030|11.850|Italia|220
+Capo Mannu|40.040|8.380|Sardinia|280
+Hilton Beach, Tel Aviv|32.090|34.770|Israel|270
+Þorlákshöfn|63.850|-21.370|Island|180
+Anchor Point, Taghazout|30.545|-9.711|Marokko|280
+Killer Point|30.560|-9.730|Marokko|280
+Tamraght|30.510|-9.680|Marokko|260
+Imsouane|30.840|-9.820|Marokko|270
+Sidi Kaouki|31.350|-9.800|Marokko|270
+Essaouira|31.500|-9.770|Marokko|300
+Safi|32.300|-9.240|Marokko|280
+Bouznika|33.800|-7.150|Marokko|320
+Rabat|34.030|-6.840|Marokko|315
+Mirleft|29.580|-10.040|Marokko|280
+N'Gor, Dakar|14.750|-17.520|Senegal|0
+Busua|4.800|-1.940|Ghana|180
+Jeffreys Bay|-34.050|24.930|Sør-Afrika|120
+Cape St Francis|-34.210|24.840|Sør-Afrika|110
+Muizenberg|-34.110|18.470|Sør-Afrika|170
+Llandudno|-34.006|18.340|Sør-Afrika|270
+Durban|-29.860|31.040|Sør-Afrika|100
+Huntington Beach|33.655|-118.000|California|210
+Trestles|33.380|-117.590|California|230
+Oceanside|33.190|-117.390|California|260
+Windansea, La Jolla|32.830|-117.280|California|270
+Malibu|34.035|-118.680|California|170
+Rincon|34.370|-119.480|California|210
+Pismo Beach|35.140|-120.640|California|260
+Morro Bay|35.370|-120.860|California|280
+Steamer Lane, Santa Cruz|36.950|-122.030|California|180
+Ocean Beach, San Francisco|37.760|-122.510|California|270
+Linda Mar, Pacifica|37.590|-122.500|California|270
+Short Sands|45.760|-123.960|Oregon|270
+Westport|46.890|-124.110|Washington|260
+Pipeline|21.665|-158.050|Hawaii|330
+Sunset Beach|21.678|-158.040|Hawaii|320
+Waikiki|21.270|-157.830|Hawaii|200
+Honolua Bay|21.010|-156.640|Hawaii|330
+Ditch Plains, Montauk|41.040|-71.920|New York|180
+Rockaway Beach|40.580|-73.820|New York|180
+Cape Hatteras|35.230|-75.530|North Carolina|120
+New Smyrna Beach|29.070|-80.920|Florida|90
+Cocoa Beach|28.370|-80.600|Florida|90
+Chesterman Beach, Tofino|49.120|-125.890|Canada|230
+Lawrencetown|44.640|-63.340|Canada|170
+San Miguel, Ensenada|31.900|-116.730|Mexico|250
+Todos Santos|23.400|-110.220|Mexico|250
+Sayulita|20.870|-105.440|Mexico|290
+Troncones|17.790|-101.740|Mexico|220
+Zicatela, Puerto Escondido|15.850|-97.060|Mexico|220
+Punta Roca|13.490|-89.320|El Salvador|190
+Popoyo|11.460|-86.110|Nicaragua|260
+San Juan del Sur|11.250|-85.870|Nicaragua|260
+Tamarindo|10.300|-85.840|Costa Rica|270
+Playa Guiones, Nosara|9.940|-85.660|Costa Rica|250
+Santa Teresa|9.650|-85.170|Costa Rica|250
+Jacó|9.610|-84.630|Costa Rica|230
+Playa Hermosa|9.560|-84.580|Costa Rica|230
+Pavones|8.390|-83.140|Costa Rica|200
+Salsa Brava, Puerto Viejo|9.660|-82.750|Costa Rica|30
+Santa Catalina|7.630|-81.250|Panama|200
+Montañita|-1.830|-80.750|Ecuador|270
+Máncora|-4.100|-81.050|Peru|300
+Chicama|-7.700|-79.440|Peru|300
+Miraflores, Lima|-12.130|-77.040|Peru|240
+Punta Hermosa|-12.330|-76.820|Peru|250
+Arica|-18.480|-70.330|Chile|270
+Iquique|-20.230|-70.150|Chile|270
+Punta de Lobos, Pichilemu|-34.430|-72.040|Chile|270
+Itacaré|-14.280|-38.990|Brasil|90
+Saquarema|-22.940|-42.480|Brasil|160
+Arpoador, Rio|-22.990|-43.190|Brasil|180
+Ubatuba|-23.430|-45.060|Brasil|120
+Joaquina, Florianópolis|-27.630|-48.450|Brasil|100
+Praia Mole|-27.600|-48.430|Brasil|100
+Silveira, Garopaba|-28.040|-48.620|Brasil|120
+La Paloma|-34.660|-54.160|Uruguay|160
+Mar del Plata|-38.010|-57.530|Argentina|110
+Uluwatu|-8.815|115.088|Bali|260
+Padang Padang|-8.810|115.100|Bali|300
+Balangan|-8.790|115.120|Bali|280
+Kuta Beach|-8.718|115.168|Bali|250
+Echo Beach, Canggu|-8.655|115.125|Bali|220
+Keramas|-8.600|115.340|Bali|160
+Nusa Dua|-8.800|115.240|Bali|100
+Medewi|-8.420|114.810|Bali|210
+Desert Point|-8.750|115.830|Lombok|300|1|4|1|Lang venstre over rev. Trenger stor sørvest-swell, best på lavvann. For erfarne.
+Mawi|-8.905|116.105|Lombok|205|1|3.5|1|Rev med venstre og høyre, kan gi tønner. Liker sørvest-swell og vind fra nord/nordøst. Sterk strøm, for erfarne.
+Are Guling|-8.912|116.240|Lombok|190|0.9|3|0.9|Rev ved stranden, både høyre og venstre. Båt eller padling ut.
+Selong Belanak|-8.870|116.150|Lombok|190|0.7|2|0.7|Sandstrand i en bukt. Snille bølger, populær for nybegynnere.
+Seger|-8.906|116.296|Lombok|190|0.9|3|0.85|Rev rett øst for Kuta Lombok. Flere topper, både høyre og venstre.
+Tanjung Aan (Aan Right)|-8.912|116.325|Lombok|180|0.85|3|0.85|Høyre over rev ytterst i Tanjung Aan-bukta. Båt fra Gerupuk eller padling.
+Gerupuk|-8.920|116.350|Lombok|180|0.65|3.5|0.9|Flere rev inne i Gerupuk-bukta (Inside, Outside, Don Don). Skjermet, så den får mindre swell og tåler store dager. Båt fra landsbyen.
+Ekas Outside|-8.880|116.445|Lombok|180|1|3.5|0.95|Åpen høyre over rev på østsiden av Ekas-bukta. Mer kraft enn Gerupuk.
+G-Land|-8.730|114.350|Java|180
+Batu Karas|-7.750|108.500|Java|200
+Lakey Peak|-8.800|118.380|Sumbawa|200
+Arugam Bay|6.840|81.840|Sri Lanka|100
+Weligama|5.970|80.420|Sri Lanka|180
+Hiriketiya|5.960|80.710|Sri Lanka|170
+Hikkaduwa|6.140|80.100|Sri Lanka|240
+Varkala|8.730|76.700|India|260
+Kovalam|8.400|76.980|India|230
+Cloud 9, Siargao|9.810|126.170|Filippinene|90
+San Juan, La Union|16.620|120.320|Filippinene|270
+Kata Beach, Phuket|7.820|98.300|Thailand|270
+My Khe, Da Nang|16.050|108.250|Vietnam|80
+Kugenuma, Shonan|35.310|139.470|Japan|180
+Ichinomiya, Chiba|35.370|140.390|Japan|110
+Kisakihama, Miyazaki|31.820|131.460|Japan|120
+Jinzun|22.950|121.290|Taiwan|90
+Riyue Bay, Hainan|18.650|110.210|Kina|150
+Bondi|-33.890|151.280|Australia|110
+Manly|-33.800|151.290|Australia|90
+Cronulla|-34.060|151.150|Australia|120
+Merewether, Newcastle|-32.950|151.760|Australia|100
+Coffs Harbour|-30.300|153.150|Australia|90
+The Pass, Byron Bay|-28.640|153.630|Australia|20
+Snapper Rocks|-28.160|153.550|Australia|30
+Burleigh Heads|-28.090|153.460|Australia|60
+Noosa|-26.380|153.090|Australia|20
+Agnes Water|-24.210|151.900|Australia|30
+Bells Beach|-38.370|144.280|Australia|150
+Torquay|-38.340|144.320|Australia|150
+Middleton|-35.510|138.710|Australia|170
+Clifton Beach, Tasmania|-42.990|147.520|Australia|160
+Margaret River|-33.970|114.980|Australia|270
+Scarborough, Perth|-31.890|115.750|Australia|270
+Manu Bay, Raglan|-37.820|174.810|New Zealand|300
+Piha|-36.950|174.470|New Zealand|270
+Mount Maunganui|-37.630|176.180|New Zealand|30
+Wainui, Gisborne|-38.690|178.070|New Zealand|110
+Sumner, Christchurch|-43.570|172.760|New Zealand|90
+St Clair, Dunedin|-45.910|170.490|New Zealand|160
+Teahupoʻo|-17.860|-149.260|Tahiti|200
+Domes, Rincón|18.364|-67.270|Puerto Rico|290
+Tres Palmas|18.350|-67.265|Puerto Rico|270
+Maria's, Rincón|18.358|-67.268|Puerto Rico|300
+Wilderness, Aguadilla|18.480|-67.165|Puerto Rico|300
+Jobos, Isabela|18.513|-67.085|Puerto Rico|0
+La Pared, Luquillo|18.380|-65.720|Puerto Rico|30
+Soup Bowl, Bathsheba|13.214|-59.523|Barbados|80
+Freights Bay|13.060|-59.530|Barbados|180
+South Point|13.040|-59.530|Barbados|180
+Duppies|13.290|-59.650|Barbados|0
+Encuentro, Cabarete|19.770|-70.430|Den dominikanske republikk|0
+Bull Bay|17.940|-76.680|Jamaica|180
+Le Moule|16.330|-61.350|Guadeloupe|60
+Tartane|14.760|-60.880|Martinique|60
+El Paredón|13.920|-91.070|Guatemala|200
+El Tunco|13.490|-89.380|El Salvador|190
+Las Flores|13.170|-88.000|El Salvador|150
+Playa Venao|7.430|-80.190|Panama|180
+Bluff Beach, Bocas del Toro|9.400|-82.260|Panama|60
+Pascuales|18.830|-103.990|Mexico|220
+Punta de Mita|20.770|-105.520|Mexico|200
+Scorpion Bay|26.240|-112.480|Mexico|200
+Palomino|11.250|-73.560|Colombia|0
+Pipa|-6.230|-35.050|Brasil|90
+Reñaca, Viña del Mar|-32.970|-71.550|Chile|270
+Kalk Bay|-34.130|18.450|Sør-Afrika|100
+Long Beach, Kommetjie|-34.140|18.330|Sør-Afrika|280
+Big Bay|-33.790|18.450|Sør-Afrika|280
+Elands Bay|-32.310|18.340|Sør-Afrika|250
+Inner Pool, Mossel Bay|-34.180|22.150|Sør-Afrika|90
+Victoria Bay|-33.990|22.550|Sør-Afrika|150
+Nahoon Reef, East London|-32.990|27.950|Sør-Afrika|120
+Tofo|-23.850|35.550|Mosambik|110
+Tamarin|-20.330|57.370|Mauritius|270
+Saint-Leu|-21.170|55.280|Réunion|270
+Robertsport|6.750|-11.370|Liberia|250
+Bureh Beach|8.200|-13.220|Sierra Leone|270
+Ponta Preta, Sal|16.590|-22.930|Kapp Verde|270
+Galveston|29.270|-94.800|Texas|140
+South Padre Island|26.100|-97.160|Texas|90
+Sebastian Inlet|27.860|-80.450|Florida|80
+Jacksonville Beach|30.290|-81.390|Florida|90
+Wrightsville Beach|34.210|-77.790|North Carolina|120
+Virginia Beach|36.850|-75.970|Virginia|90
+Manasquan|40.100|-74.030|New Jersey|100
+Narragansett|41.430|-71.460|Rhode Island|160
+Higgins Beach|43.560|-70.280|Maine|150
+Seaside|46.000|-123.930|Oregon|270
+Hanalei Bay|22.210|-159.500|Hawaii|0
+Banyans, Kona|19.600|-155.980|Hawaii|270
+Surfyy Beach, Yangyang|38.030|128.710|Sør-Korea|90
+Songjeong, Busan|35.180|129.200|Sør-Korea|150
+Wushi Harbor|24.870|121.840|Taiwan|90
+Mui Ne|10.930|108.280|Vietnam|130
+Cherating|4.130|103.390|Malaysia|90
+Krui|-5.230|103.930|Sumatra|220
+Lagundri Bay, Nias|-0.570|97.750|Sumatra|200
+Pacitan|-8.220|111.100|Java|180
+Sabang Beach, Baler|15.770|121.570|Filippinene|90
+Liwliwa, Zambales|15.080|120.010|Filippinene|270
+Arambol, Goa|15.680|73.700|India|270
+Mulki|13.090|74.780|India|270
+Puducherry|11.930|79.840|India|90
+Sigatoka|-18.170|177.500|Fiji|190
+Ribeira Grande|37.820|-25.520|Azorene|0
+Ostia|41.730|12.280|Italia|220
+St Ouen's Bay|49.230|-2.240|Jersey|270
+Pease Bay|55.930|-2.340|Skottland|40
+Oostende|51.230|2.920|Belgia|330`;
+const WORLD = WORLD_RAW.split("\n").map((l,i)=>{ const [name,lat,lon,region,f,exp,max,q,note] = l.split("|"); const facing = +f;
+  return {id:"w"+i, name, lat:+lat, lon:+lon, region, kind:"surf", facing, swell:[(facing+290)%360,(facing+70)%360], tide:"alle",
+    exp: exp ? +exp : 1, max: max ? +max : 3.0, q: q ? +q : 1,
+    note: (note ? note+" " : "Kjent surfespot. ") + `Vender omtrent mot ${compass(facing)}.` + (exp && +exp<1 ? ` Skjermet: regner med ca. ${Math.round(+exp*100)} % av swellen ute på havet.` : "")}; });
+
+const SKILL = {
+  nybegynner:{a:.3, b:.5, c:1.2, d:1.8},
+  middels:   {a:.5, b:.8, c:2.0, d:2.9},
+  erfaren:   {a:.7, b:1.2,c:3.4, d:4.8}
+};
+const DRIVE_PENALTY = 0.6;              // poeng per time kjøring
+const RADIUS_KM = {1:110, 2:200, 4:330, 8:550};  // søkeradius i luftlinje
+const MAX_SPOTS = 45;
+const BEACH_FACTOR = 0.8;               // strender som ikke er merket som surfespot
+
+// ---------- Hjelpere ----------
+const $ = s => document.querySelector(s);
+const clamp = (x,a,b) => Math.max(a,Math.min(b,x));
+const angDiff = (a,b) => { const d = Math.abs(((a-b)%360+360)%360); return d>180?360-d:d; };
+const store = { get(k){try{return JSON.parse(localStorage.getItem("bj_"+k))}catch(e){return null}}, set(k,v){try{localStorage.setItem("bj_"+k,JSON.stringify(v))}catch(e){}} };
+const rad = d => d*Math.PI/180;
+function distKm(a,b){ const R=6371, dLat=rad(b.lat-a.lat), dLon=rad(b.lon-a.lon);
+  const x = Math.sin(dLat/2)**2 + Math.cos(rad(a.lat))*Math.cos(rad(b.lat))*Math.sin(dLon/2)**2; return 2*R*Math.asin(Math.sqrt(x)); }
+const esc = s => String(s).replace(/[&<>"]/g, c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+
+// Lokal tid per tidssone (spotens egen tid)
+const fmtCache = {};
+function parts(ms, tz){
+  const f = fmtCache[tz] || (fmtCache[tz] = new Intl.DateTimeFormat("sv-SE",{timeZone:tz,year:"numeric",month:"2-digit",day:"2-digit",hour:"2-digit",minute:"2-digit",hourCycle:"h23"}));
+  const s = f.format(new Date(ms)); return {date:s.slice(0,10), hm:s.slice(11,16), h:+s.slice(11,13)};
+}
+const DAYN = ["søn","man","tir","ons","tor","fre","lør"];
+const dayName = date => { const [y,m,d] = date.split("-").map(Number); return DAYN[new Date(Date.UTC(y,m-1,d)).getUTCDay()]; };
+function dayLabel(ms, tz){
+  const d = parts(ms,tz).date;
+  if(d===parts(Date.now(),tz).date) return "I dag";
+  if(d===parts(Date.now()+864e5,tz).date) return "I morgen";
+  const n = dayName(d); return n[0].toUpperCase()+n.slice(1);
+}
+const fmtDur = s => { const m = Math.round(s/60); if(m<60) return m+" min"; const h=Math.floor(m/60), r=m%60; return r? `${h} t ${r} min` : `${h} t`; };
+
+function band(score){
+  if(score>=7) return {c:"var(--s4)", t:"Episk"};
+  if(score>=5) return {c:"var(--s3)", t:"Bra"};
+  if(score>=3) return {c:"var(--s2)", t:"Surfbart"};
+  if(score>=1.5) return {c:"var(--s1)", t:"Svakt"};
+  return {c:"var(--s0)", t:"Dårlig"};
+}
+
+// ---------- Scoring ----------
+function trap(x,a,b,c,d){ if(x<=a||x>=d) return 0; if(x<b) return (x-a)/(b-a); if(x<=c) return 1; return (d-x)/(d-c); }
+function inWindow(d,[a,b]){ return ((d-a+360)%360) <= ((b-a+360)%360); }
+function windRel(spot,wd){ return angDiff(wd,(spot.facing+180)%360); }
+function windKind(spot,ws,wd){
+  if(ws<2) return "flau vind";
+  const r = windRel(spot,wd);
+  return r<=50?"fralandsvind":r<=110?"sidevind":"pålandsvind";
+}
+function scoreHour(spot,h,skill,tideRange){
+  if(h.h==null || h.dir==null) return {score:0, raw:0};
+  const sk = SKILL[skill];
+  const c = Math.min(sk.c, spot.max), d = Math.max(c+0.3, Math.min(sk.d, spot.max*1.4));
+  const size = trap(h.h*(spot.exp ?? 1), sk.a, Math.min(sk.b,c-0.05), c, d);
+  const dir = inWindow(h.dir,spot.swell) ? 1 : clamp(1 - Math.min(angDiff(h.dir,spot.swell[0]),angDiff(h.dir,spot.swell[1]))/45, 0, 1);
+  const per = clamp(0.3 + (h.per-4)*0.1, 0.3, 1);
+  let wind = 1;
+  if(h.ws!=null && h.ws>=2){
+    const r = windRel(spot,h.wd);
+    if(r<=50) wind = h.ws<=9 ? 1 : clamp(1-(h.ws-9)/8, .2, 1);
+    else if(r<=110) wind = clamp(1-(h.ws-2)/9, .1, 1);
+    else wind = clamp(1-(h.ws-1.5)/5, 0, 1);
+    if(h.gust>10 && h.gust>h.ws*1.6) wind *= .9;
+  }
+  let tide = 1;
+  if(spot.tide!=="alle" && h.tideN!=null){
+    const n = h.tideN;
+    const raw = spot.tide==="lav" ? 1-n : spot.tide==="høy" ? n : 1-Math.abs(n-.5)*2;
+    tide = 1 - clamp(tideRange/2, .1, .5)*(1-raw);
+  }
+  const kind = (spot.kind==="beach" ? BEACH_FACTOR : 1) * (spot.q ?? 1);
+  const raw = 10*size*dir*per*wind*tide*kind;
+  return {score: raw*(h.day?1:0), raw};
+}
+
+async function getJSON(url){ const r = await fetch(url); if(!r.ok) throw new Error(r.status); return r.json(); }
+
+// ---------- Finne spots rundt deg (OpenStreetMap) ----------
+// Offentlige Overpass-servere er ofte overbelastet. Prøv én om gangen, med tidsavbrudd.
+const OVERPASS = ["https://overpass-api.de/api/interpreter","https://maps.mail.ru/osm/tools/overpass/api/interpreter"];
+async function overpass(q){
+  for(const ep of OVERPASS){
+    const ctl = new AbortController(), timer = setTimeout(()=>ctl.abort(), 20000);
+    try{
+      const r = await fetch(ep,{method:"POST",signal:ctl.signal,headers:{"Content-Type":"application/x-www-form-urlencoded"},body:"data="+encodeURIComponent(q)});
+      if(r.ok){ const j = await r.json(); clearTimeout(timer); if(!j.remark || j.elements?.length) return j; }
+    }catch(e){}
+    clearTimeout(timer);
+  }
+  throw new Error("overpass");
+}
+// Surfebutikker, skoler og leiesteder er også merket sport=surfing i OSM. De skal ikke med.
+const NOT_A_SPOT = /shop|store|school|skole|escuela|escola|[ée]cole|schule|academy|lesson|camp|hostel|hotel|house|lodge|rental|hire|club|klubb|caf[eé]|\bbar\b|outlet|magasin|board|surfboard|tienda|loja|eskola/i;
+const BAD_TAGS = ["shop","craft","amenity","office","club","building","healthcare"];
+function isSpot(t){
+  if(BAD_TAGS.some(k=>t[k])) return false;
+  if(t.tourism && t.tourism!=="attraction") return false;
+  if(t.leisure && ["sports_centre","fitness_centre","water_park","swimming_pool","pitch"].includes(t.leisure)) return false;
+  return !NOT_A_SPOT.test(t.name||"");
+}
+
+// Retning per spot lagres for godt (terrenget flytter seg ikke)
+async function withFacing(list){
+  const memo = store.get("facing") || {};
+  const need = list.filter(p=>p.facing==null && memo[p.id]===undefined);
+  if(need.length){
+    const f = await seaFacing(need);
+    need.forEach((p,i)=>{ memo[p.id] = f[i]; });
+    store.set("facing", memo);
+  }
+  return list.map(p=>{
+    if(p.facing!=null) return p;
+    const facing = memo[p.id];
+    if(facing==null) return null; // ikke ved havet
+    return {...p, facing, swell:[(facing+290)%360,(facing+70)%360], tide:"alle", max:3.0,
+      note: p.osm ? (p.kind==="surf" ? `Merket som surfespot i OpenStreetMap. Vender omtrent mot ${compass(facing)}.`
+                                     : `Strand som vender omtrent mot ${compass(facing)}. Ikke merket som surfespot, så sjekk lokalt om den bryter.`)
+                  : `Kjent surfespot. Vender omtrent mot ${compass(facing)} (beregnet fra terrenget).`};
+  }).filter(Boolean);
+}
+
+function builtInSpots(origin, radiusKm){
+  return [...CURATED, ...WORLD].map(s=>({...s, dist:distKm(origin,s)})).filter(s=>s.dist<=radiusKm);
+}
+
+// Ekstra spots fra OpenStreetMap. Overpass er ofte treg, så dette kjører i bakgrunnen.
+async function osmSpots(origin, radiusKm){
+  const key = `osm_${origin.lat.toFixed(1)}_${origin.lon.toFixed(1)}_${radiusKm}`;
+  const cached = store.get(key);
+  if(cached && Date.now()-cached.t < 14*864e5) return cached.spots;
+  const dLat = radiusKm/110.57, dLon = radiusKm/(111.32*Math.cos(rad(origin.lat)));
+  const bb = `(${(origin.lat-dLat).toFixed(3)},${(origin.lon-dLon).toFixed(3)},${(origin.lat+dLat).toFixed(3)},${(origin.lon+dLon).toFixed(3)})`;
+  const d = await overpass(`[out:json][timeout:25];(nwr["sport"="surfing"]${bb};nwr["natural"="beach"]["name"]${bb};);out center tags qt;`);
+  let cands = d.elements.map(e=>{
+    const t = e.tags||{}, lat = e.lat ?? e.center?.lat, lon = e.lon ?? e.center?.lon;
+    const surf = t.sport==="surfing";
+    if(lat==null || (surf && !isSpot(t))) return null;
+    const name = t.name || t["name:en"] || (surf ? "Surfespot" : null);
+    if(!name) return null;
+    return {id:e.type[0]+e.id, name, lat, lon, kind: surf?"surf":"beach", osm:true, region: surf?"Surfespot":"Strand", dist: distKm(origin,{lat,lon})};
+  }).filter(c=>c && c.dist<=radiusKm);
+  const cell = Math.max(4, radiusKm/14);
+  cands.sort((a,b)=> (a.kind==="surf"?0:1)-(b.kind==="surf"?0:1) || a.dist-b.dist);
+  const picked = [];
+  for(const c of cands){
+    if(picked.some(p=>distKm(p,c) < (p.kind==="surf"&&c.kind==="surf" ? 1.5 : cell))) continue;
+    picked.push(c);
+    if(picked.length >= 30) break;
+  }
+  store.set(key,{t:Date.now(), spots:picked});
+  return picked;
+}
+
+const RING_DIST = [1,3], RING_N = 8;   // 16 punkter per spot (Open-Meteo teller hvert punkt)
+async function seaFacing(pts){
+  const q = [];
+  pts.forEach(p=>{ const kx = Math.cos(rad(p.lat))*111.32;
+    for(let k=0;k<RING_N;k++){ const b = k*360/RING_N;
+      for(const d of RING_DIST) q.push([(p.lat + d/110.57*Math.cos(rad(b))).toFixed(5), (p.lon + d/kx*Math.sin(rad(b))).toFixed(5)]); } });
+  const chunks = [];
+  for(let i=0;i<q.length;i+=100) chunks.push(q.slice(i,i+100));
+  const res = await Promise.all(chunks.map(ch=>getJSON(`https://api.open-meteo.com/v1/elevation?latitude=${ch.map(c=>c[0]).join(",")}&longitude=${ch.map(c=>c[1]).join(",")}`).then(d=>d.elevation)));
+  const el = res.flat(), per = RING_N*RING_DIST.length;
+  return pts.map((p,i)=>{
+    const w = [];
+    for(let k=0;k<RING_N;k++){ let n=0; for(let j=0;j<RING_DIST.length;j++) if(el[i*per+k*RING_DIST.length+j] <= 0.5) n++; w.push(n); }
+    const open = w.map((n,k)=>n===RING_DIST.length?k:-1).filter(k=>k>=0);
+    const use = open.length ? open : w.map((n,k)=>n>0?k:-1).filter(k=>k>=0);
+    if(!use.length) return null;
+    let x=0, y=0; use.forEach(k=>{ x += Math.sin(rad(k*360/RING_N))*w[k]; y += Math.cos(rad(k*360/RING_N))*w[k]; });
+    return Math.round((Math.atan2(x,y)*180/Math.PI+360)%360);
+  });
+}
+
+
+// ---------- Varsel ----------
+async function fetchForecast(spots){
+  const lat = spots.map(s=>s.lat.toFixed(4)).join(","), lon = spots.map(s=>s.lon.toFixed(4)).join(",");
+  const common = `latitude=${lat}&longitude=${lon}&timezone=auto&timeformat=unixtime&forecast_days=4`;
+  const [marine, wx] = await Promise.all([
+    getJSON(`https://marine-api.open-meteo.com/v1/marine?${common}&hourly=wave_height,wave_direction,wave_period,swell_wave_period,swell_wave_peak_period,sea_level_height_msl&cell_selection=sea`),
+    getJSON(`https://api.open-meteo.com/v1/forecast?${common}&hourly=wind_speed_10m,wind_direction_10m,wind_gusts_10m,weather_code,temperature_2m,precipitation,is_day&daily=sunrise,sunset&wind_speed_unit=ms`)
+  ]);
+  const M = Array.isArray(marine)?marine:[marine], W = Array.isArray(wx)?wx:[wx];
+  const tides = await Promise.all(spots.map(s=>s.tideApi ? fetchTide(s).catch(()=>null) : null));
+  return spots.map((s,i)=>buildHours(s, M[i], W[i], tides[i])).filter(f=>f.hours.some(h=>h.h!=null));
+}
+
+async function fetchTide(s){
+  const day = ms => new Date(ms).toISOString().slice(0,10)+"T00:00";
+  const url = `https://vannstand.kartverket.no/tideapi.php?lat=${s.lat}&lon=${s.lon}&fromtime=${day(Date.now()-864e5)}&totime=${day(Date.now()+5*864e5)}&datatype=pre&refcode=cd&lang=nb&interval=60&dst=1&tzone=1&tide_request=locationdata`;
+  const r = await fetch(url); if(!r.ok) throw new Error("tide");
+  const xml = new DOMParser().parseFromString(await r.text(),"text/xml");
+  const out = {};
+  xml.querySelectorAll("waterlevel").forEach(w=>{ out[Math.round(Date.parse(w.getAttribute("time"))/36e5)] = parseFloat(w.getAttribute("value"))/100; });
+  return Object.keys(out).length ? out : null;
+}
+
+function buildHours(spot, m, w, tide){
+  const tz = m.timezone || w.timezone || "UTC";
+  const sun = {};
+  w.daily.time.forEach((t,i)=>{ sun[parts(t*1000,tz).date] = [w.daily.sunrise[i]*1000, w.daily.sunset[i]*1000]; });
+  const wIdx = {}; w.hourly.time.forEach((t,i)=>wIdx[t]=i);
+  const H = m.hourly;
+  const hours = H.time.map((t,i)=>{
+    const ms = t*1000, wi = wIdx[t], ss = sun[parts(ms,tz).date];
+    const day = ss ? (ms >= ss[0]-30*60e3 && ms <= ss[1]-30*60e3) : true;
+    const per = H.swell_wave_peak_period[i] ?? H.swell_wave_period[i] ?? H.wave_period[i] ?? 6;
+    const tl = tide ? tide[Math.round(ms/36e5)] : H.sea_level_height_msl?.[i];
+    return { ms, h:H.wave_height[i], dir:H.wave_direction[i], per,
+      ws: wi!=null ? w.hourly.wind_speed_10m[wi] : null,
+      wd: wi!=null ? w.hourly.wind_direction_10m[wi] : null,
+      gust: wi!=null ? w.hourly.wind_gusts_10m[wi] : null,
+      wcode: wi!=null ? w.hourly.weather_code[wi] : null, temp: wi!=null ? w.hourly.temperature_2m[wi] : null,
+      prec: wi!=null ? w.hourly.precipitation[wi] : null, isDay: wi!=null ? w.hourly.is_day[wi]===1 : true,
+      tide: tl ?? null, day };
+  });
+  const tv = hours.map(h=>h.tide).filter(v=>v!=null);
+  const tmin = Math.min(...tv), tmax = Math.max(...tv), range = tv.length ? tmax-tmin : 0;
+  hours.forEach((h,i)=>{
+    h.tideN = h.tide!=null && range>0 ? (h.tide-tmin)/range : null;
+    const nx = hours[i+1]; h.tideTrend = nx && nx.tide!=null && h.tide!=null ? (nx.tide>h.tide?"stigende":"fallende") : "";
+  });
+  return { spot, tz, hours, tideRange: range, tideSrc: tide ? "Kartverket" : "modell", sun };
+}
+
+async function fetchDrive(origin, spots){
+  try{
+    const coords = [[origin.lon,origin.lat], ...spots.map(s=>[s.lon,s.lat])].map(c=>c.map(v=>v.toFixed(5)).join(",")).join(";");
+    const d = await getJSON(`https://router.project-osrm.org/table/v1/driving/${coords}?sources=0&annotations=duration,distance`);
+    return spots.map((s,i)=>({ dur:d.durations[0][i+1], dist:d.distances[0][i+1], est:false }));
+  }catch(e){
+    // Reserve: luftlinje × 1,3 i 65 km/t
+    return spots.map(s=>{ const km = distKm(origin,s)*1.3; return {dur:km/65*3600, dist:km*1000, est:true}; });
+  }
+}
+
+// ---------- State ----------
+const state = {
+  origin: null,
+  skill: store.get("skill") || "middels",
+  maxDrive: store.get("maxDrive") || 4,
+  when: store.get("when") || "3d",
+  forecast: null, drive: null, loadedRadius: 0, fetchedAt: null, selId: null
+};
+if(!RADIUS_KM[state.maxDrive]) state.maxDrive = 4;
+
+// ---------- Analyse ----------
+function analyse(){
+  const now = Date.now();
+  return state.forecast.map((f,i)=>{
+    const dr = state.drive[i];
+    const driveS = dr && dr.dur!=null ? dr.dur : null;
+    const arriveMs = now + (driveS||0)*1000 - 30*60e3; // inntil 30 min inn i timen teller
+    const scored = f.hours.map(h=>({...h, ...scoreHour(f.spot,h,state.skill,f.tideRange)}));
+    const today = parts(now,f.tz).date, tom = parts(now+864e5,f.tz).date;
+    const inHorizon = h => state.when==="today" ? parts(h.ms,f.tz).date===today
+      : state.when==="tomorrow" ? parts(h.ms,f.tz).date===tom
+      : h.ms >= now-36e5 && h.ms < now+3*864e5;
+    let best = null;
+    for(let j=0;j<scored.length-1;j++){
+      const a = scored[j], b = scored[j+1];
+      if(!inHorizon(a) || !a.day || a.ms < arriveMs) continue;
+      const sc = b && b.day ? (a.score+b.score)/2 : a.score*0.85;
+      if(!best || sc > best.score) best = {score:sc, i:j, start:a.ms, end: b && b.day ? b.ms : a.ms};
+    }
+    const driveH = driveS!=null ? driveS/3600 : null;
+    const value = best ? best.score - (driveH!=null ? driveH*DRIVE_PENALTY : 0) : -99;
+    return { ...f, scored, best, driveS, driveH, driveEst: dr?.est, dist: dr?.dist, value,
+      inRange: driveH!=null && driveH <= state.maxDrive, inHorizon };
+  });
+}
+
+// ---------- Render ----------
+function links(r){
+  const {lat,lon,name} = r.spot;
+  return `<a href="https://www.google.com/maps/dir/?api=1&destination=${lat},${lon}" target="_blank" rel="noopener">Veibeskrivelse</a>
+    <a href="https://www.windy.com/?waves,${lat},${lon},9" target="_blank" rel="noopener">Windy</a>
+    <a href="https://www.google.com/search?q=${encodeURIComponent("surf-forecast "+name)}" target="_blank" rel="noopener">Surf-forecast</a>`;
+}
+const hourEnd = (ms,tz) => parts(ms+36e5,tz).hm;
+const driveTxt = r => r.driveS!=null ? (r.driveEst?"ca. ":"")+fmtDur(r.driveS) : "ingen bilvei";
+const windShort = (spot,h) => h.ws==null ? "–" : `${Math.round(h.ws)} m/s ${h.ws>=2?compass(h.wd):""}`;
+
+function renderHero(rows){
+  const el = $("#hero");
+  const top = rows.filter(r=>r.best && r.inRange).sort((a,b)=>b.value-a.value)[0];
+  if(!top || top.best.score < 1.5){
+    const any = rows.filter(r=>r.best).sort((a,b)=>b.best.score-a.best.score)[0];
+    el.innerHTML = `<div class="pick"><div class="lbl">Beste valg</div><h2>Ingenting verdt det innen ${state.maxDrive} t</h2>
+      <p>${any && any.best.score>=1.5 ? `Beste i nærheten er ${esc(any.spot.name)} (${Math.round(any.best.score)}/10), ${driveTxt(any)} unna.` : "Ingen spots ser surfbare ut i perioden."}</p></div>`;
+    return;
+  }
+  const r = top, b = r.best, h = r.scored[b.i], tz = r.tz;
+  const leaveMs = b.start - (r.driveS||0)*1000, leaveNow = leaveMs <= Date.now()+10*60e3;
+  const wk = h.ws!=null ? windKind(r.spot,h.ws,h.wd) : "";
+  el.innerHTML = `<div class="pick">
+    <div class="lbl">Beste valg</div>
+    <h2>${esc(r.spot.name)}</h2>
+    <dl>
+      <dt>Når</dt><dd>${dayLabel(b.start,tz)} ${parts(b.start,tz).hm}–${hourEnd(b.end,tz)}</dd>
+      <dt>Dra</dt><dd>${leaveNow?"Nå":dayLabel(leaveMs,tz)+" "+parts(leaveMs,tz).hm} (${driveTxt(r)} kjøring)</dd>
+      <dt>Bølger</dt><dd>${h.h.toFixed(1)} m, ${Math.round(h.per)} s fra ${compass(h.dir)}</dd>
+      <dt>Vind</dt><dd>${windShort(r.spot,h)}${wk?", "+wk:""}</dd>
+      <dt>Rating</dt><dd>${Math.round(b.score)} av 10</dd>
+    </dl>
+  </div>`;
+}
+
+function renderList(rows){
+  const sorted = rows.filter(r=>r.inRange).sort((a,b)=>b.value-a.value);
+  if(!sorted.length){ $("#list").innerHTML = `<div class="status">Fant ingen spots innen ${state.maxDrive} t kjøring. Øk maks kjøretid eller søk et annet sted. Ingen spots ved havet innen ${RADIUS_KM[state.maxDrive]} km. Øk maks kjøretid eller søk et annet sted.</div>`; return; }
+  $("#list").innerHTML = `<div class="tablewrap"><table class="spots">
+    <thead><tr><th>Spot</th><th>Rating</th><th>Beste tid</th><th>Bølger</th><th>Vind</th><th>Kjøretid</th></tr></thead>
+    <tbody>${sorted.map(r=>{
+      const sc = r.best ? r.best.score : 0, h = r.best ? r.scored[r.best.i] : null;
+      return `<tr class="srow${r.inRange?"":" out"}${state.selId===r.spot.id?" sel":""}" data-id="${r.spot.id}" tabindex="0">
+        <td class="name">${esc(r.spot.name)}<small>${esc(r.spot.region)}</small></td>
+        <td class="r">${starSvg(Math.round(sc))}</td>
+        <td>${h ? dayLabel(r.best.start,r.tz)+" "+parts(r.best.start,r.tz).hm : "–"}</td>
+        <td>${h ? `${h.h.toFixed(1)} m ${Math.round(h.per)} s ${compass(h.dir)}` : "–"}</td>
+        <td>${h ? windShort(r.spot,h) : "–"}</td>
+        <td>${driveTxt(r)}</td>
+      </tr>`; }).join("")}</tbody></table></div>`;
+  document.querySelectorAll("tr.srow").forEach(tr=>{
+    const pick = ()=>{
+      state.selId = tr.dataset.id;
+      document.querySelectorAll("tr.srow").forEach(x=>x.classList.toggle("sel", x===tr));
+      renderForecast(rows.find(r=>r.spot.id===state.selId));
+      $("#fc").scrollIntoView({behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth", block:"start"});
+    };
+    tr.onclick = pick;
+    tr.onkeydown = e=>{ if(e.key==="Enter"||e.key===" "){ e.preventDefault(); pick(); } };
+  });
+}
+
+// ---------- Varseltabell (3-timers kolonner) ----------
+const BLUES = ["#9dbcf0","#6c95e6","#4677dd","#2a5ad0","#1c41b7","#132e98","#0b1d73"];
+const waveBlue = h => BLUES[Math.min(6, [.5,1,1.5,2,3,4].filter(x=>h>=x).length)];
+const kjBlue = e => BLUES[Math.min(6, [100,250,500,900,1500,2500].filter(x=>e>=x).length)];
+const energyKJ = (h,t) => Math.round(2.1*h*h*t*t);   // omtrentlig bølgeenergi
+const fmtM = v => v.toFixed(2).replace(".",",")+" m";
+const DAYFULL = ["Søndag","Mandag","Tirsdag","Onsdag","Torsdag","Fredag","Lørdag"];
+
+// Sirkel med spiss som peker dit bølgene/vinden går
+function notch(fromDeg, label, fill){
+  return `<svg viewBox="-20 -20 40 40" width="36" height="36" aria-hidden="true"><path transform="rotate(${Math.round(fromDeg+180)})" d="M0-19.5L7-10.95A13 13 0 1 1-7-10.95Z" fill="${fill}"/><text y="4.6" text-anchor="middle" fill="#fff" font-size="12.5" font-weight="700" font-family="Helvetica Neue,Arial,sans-serif">${label}</text></svg>`;
+}
+function starSvg(n){
+  const fill = n<=0?"#fff":n<=2?"#fff4c2":n<=4?"#ffe27a":n<=6?"#ffcc3d":n<=8?"#ffad1f":"#ff8a00";
+  return `<svg viewBox="0 0 24 24" width="34" height="34" aria-label="${n} av 10"><path d="M12 1.8l3.1 6.6 7.2.9-5.3 5 1.4 7.1L12 17.9l-6.4 3.5 1.4-7.1-5.3-5 7.2-.9z" fill="${fill}" stroke="#9aa3ad" stroke-width=".9" stroke-linejoin="round"/><text x="12" y="15.2" text-anchor="middle" font-size="7.5" font-weight="700" fill="#333" font-family="Helvetica Neue,Arial,sans-serif">${n}</text></svg>`;
+}
+const GRAPH_H = 78;
+const graphY = m => GRAPH_H*(1-Math.sqrt(Math.min(m,10)/10));
+function waveSvg(h){
+  const top = graphY(h), hp = Math.max(3, GRAPH_H-top), sy = hp/40;
+  return `<svg viewBox="0 0 52 ${GRAPH_H}" width="52" height="${GRAPH_H}" preserveAspectRatio="none" aria-hidden="true"><g transform="translate(2 ${top}) scale(1.2 ${sy})"><path d="M0 40C6 39 9 30 13 20C17 9 25 2 33 3C40 4 43 10 40 15C37 11 32 11 30 15C28 21 31 31 40 40Z" fill="${waveBlue(h)}"/><path d="M2 40C9 37 13 28 18 22C23 17 29 19 34 40Z" fill="#fff" opacity=".3"/></g></svg>`;
+}
+function graphScale(){
+  const t = [[10,"10m"],[5,"5m"],[3,"3m"],[1,"1m"],[0,"0m"]];
+  return `<svg viewBox="0 0 40 ${GRAPH_H}" width="40" height="${GRAPH_H}" style="display:inline-block;vertical-align:bottom;margin:0">`+
+    t.map(([m,l])=>`<text x="30" y="${Math.min(GRAPH_H-1,Math.max(8,graphY(m)+3))}" text-anchor="end" font-size="9" font-weight="700" fill="#333">${l}</text><rect x="32" y="${Math.min(GRAPH_H-1,graphY(m))}" width="6" height="1" fill="#333"/>`).join("")+
+    `<rect x="38" y="0" width="1" height="${GRAPH_H}" fill="#333"/></svg>`;
+}
+function windState(spot,ws,wd){
+  if(ws==null) return null;
+  if(ws<2) return ["flau","ws-calm"];
+  const r = windRel(spot,wd);
+  return r<=35?["fraland","ws-off"]:r<=75?["side-<br>fraland","ws-xoff"]:r<=105?["side","ws-x"]:r<=145?["side-<br>påland","ws-xon"]:["påland","ws-on"];
+}
+function wxIcon(c,day){
+  if(c==null) return "";
+  if(c===0) return day?"☀️":"🌙"; if(c===1) return day?"🌤️":"🌙"; if(c===2) return day?"⛅":"☁️"; if(c===3) return "☁️";
+  if(c<=48) return "🌫️"; if(c<=57) return "🌦️"; if(c<=67) return "🌧️"; if(c<=77) return "🌨️"; if(c<=82) return "🌦️"; if(c<=86) return "🌨️"; return "⛈️";
+}
+
+function renderForecast(r){
+  const el = $("#fc");
+  if(!r){ el.innerHTML = ""; return; }
+  const tz = r.tz, now = Date.now(), H = r.scored, s = r.spot;
+  const cols = H.map((h,i)=>({...h,i})).filter(h=>h.ms >= now-3*36e5 && parts(h.ms,tz).h % 3 === 0 && h.h!=null);
+  if(!cols.length){ el.innerHTML = ""; return; }
+
+  // Høy- og lavvann fra timesserien
+  const ext = [];
+  for(let i=1;i<H.length-1;i++){
+    const a=H[i-1].tide, b=H[i].tide, c=H[i+1].tide;
+    if(a==null||b==null||c==null) continue;
+    if(b>=a && b>c) ext.push({ms:H[i].ms, hi:true, v:b}); else if(b<=a && b<c) ext.push({ms:H[i].ms, hi:false, v:b});
+  }
+  const inCol = (c,ms) => ms>=c.ms && ms<c.ms+3*36e5;
+
+  const days = [];
+  cols.forEach(c=>{ const d = parts(c.ms,tz).date, last = days[days.length-1];
+    if(last && last.date===d) last.n++; else days.push({date:d, ms:c.ms, n:1}); c.dayIdx = days.length-1; });
+  const inBest = c => r.best && c.ms + 3*36e5 > r.best.start && c.ms <= r.best.end;
+  const cls = (c, extra="") => { const k = [extra, (c.dayIdx>0 && parts(c.ms,tz).h===0)?"dstart":"", inBest(c)?"best":""].filter(Boolean).join(" "); return k?`class="${k}"`:""; };
+  const row = (label, fn, rowCls="") => `<tr${rowCls?` class="${rowCls}"`:""}><th class="lab" scope="row">${label}</th>${cols.map(fn).join("")}</tr>`;
+
+  const dayHead = days.map((d,k)=>{
+    const [y,m,dd] = d.date.split("-").map(Number), wd = new Date(Date.UTC(y,m-1,dd)).getUTCDay();
+    return `<th class="day${k%2?" alt":""}" colspan="${d.n}"><span>${d.n>=2?DAYFULL[wd]:DAYFULL[wd].slice(0,3)}</span>${dd}</th>`;
+  }).join("");
+  const sunAt = (c, idx) => { const sun = r.sun[parts(c.ms,tz).date]; return sun && inCol(c, sun[idx]) ? parts(sun[idx],tz).hm : "–"; };
+  const rain = c => { let t=0, any=false; for(let k=0;k<3;k++){ const v = H[c.i+k]?.prec; if(v!=null){ t+=v; any=true; } } return any ? (t<0.1 ? "–" : t<1 ? t.toFixed(1).replace(".",",") : Math.round(t)) : "–"; };
+
+  el.innerHTML = `<div class="fc">
+    <div class="fc-head">
+      <h3>${esc(s.name)}</h3>
+      <div class="sub">${esc(s.region)} · vender mot ${compass(s.facing)} · ${driveTxt(r)} kjøring · tidevann: ${r.tideSrc} · lokal tid</div>
+      <div class="links">${links(r)}</div>
+    </div>
+    <div class="fc-scroll"><table class="fct">
+      <thead><tr><th class="lab"></th>${dayHead}</tr></thead>
+      <tbody>
+        ${row("", c=>`<td ${cls(c, c.dayIdx%2?"alt":"")}>${parts(c.ms,tz).hm.slice(0,2)}</td>`, "time")}
+        ${row(`Rating<small>(10 maks)</small>`, c=>`<td ${cls(c)}>${starSvg(Math.round(c.raw))}</td>`, "sep")}
+        ${row("Bølgehøyde (m)", c=>`<td ${cls(c)}>${notch(c.dir, c.h.toFixed(1), waveBlue(c.h))}</td>`, "sep")}
+        ${row("Retning", c=>`<td ${cls(c,"dir")}>${compass(c.dir)}</td>`)}
+        ${row("Periode (s)", c=>`<td ${cls(c,"per")}>${Math.round(c.per)}</td>`)}
+        ${row(`Bølgegraf ${graphScale()}`, c=>`<td ${cls(c,"graph")}>${waveSvg(c.h)}</td>`)}
+        ${row("Energi (kJ)", c=>{ const e = energyKJ(c.h,c.per); return `<td ${cls(c,"kj")} style="background:${kjBlue(e)}">${e}</td>`; })}
+        ${row("Vind (m/s)", c=>`<td ${cls(c)}>${c.ws==null?"–":notch(c.wd, Math.round(c.ws), "#151515")}</td>`, "sep")}
+        ${row("Vindretning", c=>`<td ${cls(c,"dir")}>${c.wd==null?"–":compass(c.wd)}</td>`)}
+        ${row("Vindtype", c=>{ const w = windState(s,c.ws,c.wd); return w ? `<td ${cls(c,"ws "+w[1])}>${w[0]}</td>` : `<td ${cls(c)}>–</td>`; })}
+        ${row("Høyvann", c=>`<td ${cls(c,"tide")}>${ext.filter(e=>e.hi && inCol(c,e.ms)).map(e=>`<b>${parts(e.ms,tz).hm}</b>${fmtM(e.v)}`).join("")}</td>`, "sep")}
+        ${row("Lavvann", c=>`<td ${cls(c,"tide")}>${ext.filter(e=>!e.hi && inCol(c,e.ms)).map(e=>`<b>${parts(e.ms,tz).hm}</b>${fmtM(e.v)}`).join("")}</td>`)}
+        ${row("Vær", c=>`<td ${cls(c,"wx")}>${wxIcon(c.wcode, c.isDay)}</td>`, "sep")}
+        ${row("Temp (°C)", c=>`<td ${cls(c,"temp")}>${c.temp==null?"–":Math.round(c.temp)}</td>`)}
+        ${row("Nedbør (mm)", c=>`<td ${cls(c,"rain")}>${rain(c)}</td>`)}
+        ${row("☀︎ opp", c=>`<td ${cls(c)}>${sunAt(c,0)}</td>`, "sunrise")}
+        ${row("☾ ned", c=>`<td ${cls(c)}>${sunAt(c,1)}</td>`, "sunset")}
+      </tbody></table></div>
+    <div class="fc-legend">
+      <span>Spissen på sirklene peker dit bølgene og vinden går. Blå ramme = beste vindu. Bølgehøyde er modellens verdi ute på havet.</span>
+    </div>
+    <p class="fc-note">${esc(s.note)}</p>
+  </div>`;
+  const best = el.querySelector("td.best"), sc = el.querySelector(".fc-scroll");
+  if(best && sc) sc.scrollLeft = Math.max(0, best.offsetLeft - 150);
+}
+
+function render(){
+  if(!state.forecast) return;
+  const rows = analyse();
+  renderHero(rows);
+  const top = rows.filter(r=>r.best && r.inRange).sort((a,b)=>b.value-a.value)[0] || rows[0];
+  if(!rows.some(r=>r.spot.id===state.selId)) state.selId = top?.spot.id;
+  renderList(rows);
+  renderForecast(rows.find(r=>r.spot.id===state.selId));
+  $("#stamp").textContent = state.fetchedAt ? ` Sist hentet ${new Date(state.fetchedAt).toLocaleTimeString("nb-NO",{hour:"2-digit",minute:"2-digit"})}.` : "";
+}
+
+// ---------- Posisjon ----------
+function setOrigin(o){
+  state.origin = o; store.set("origin", o);
+  $("#whereTxt").innerHTML = o.gps ? "Fra <b>din posisjon</b>" : `Fra <b>${esc(o.name)}</b>`;
+}
+function locate(){
+  return new Promise(res=>{
+    if(!navigator.geolocation) return res(null);
+    navigator.geolocation.getCurrentPosition(
+      p=>res({name:"Min posisjon", gps:true, lat:p.coords.latitude, lon:p.coords.longitude}),
+      ()=>res(null), {enableHighAccuracy:false, timeout:8000, maximumAge:10*60e3});
+  });
+}
+async function geocode(q){
+  const d = await getJSON(`https://nominatim.openstreetmap.org/search?format=json&limit=1&accept-language=nb&q=${encodeURIComponent(q)}`);
+  if(!d.length) return null;
+  return {name: d[0].display_name.split(",").slice(0,2).join(",").trim(), lat:+d[0].lat, lon:+d[0].lon};
+}
+
+// ---------- Lasting ----------
+let loadSeq = 0;
+function merge(base, extra){
+  return [...base, ...extra.filter(e=>!base.some(b=>distKm(b,e) < (e.kind==="beach"?4:2)))];
+}
+async function showSpots(seq, o, spots){
+  spots = spots.sort((a,b)=>a.dist-b.dist).slice(0, MAX_SPOTS);
+  const [fc, drive] = await Promise.all([fetchForecast(spots), fetchDrive(o, spots)]);
+  if(seq!==loadSeq) return false;
+  state.drive = fc.map(f=>drive[spots.indexOf(f.spot)]);
+  state.forecast = fc; state.fetchedAt = Date.now();
+  render();
+  return true;
+}
+async function loadAll(){
+  const seq = ++loadSeq, o = state.origin, R = RADIUS_KM[state.maxDrive];
+  state.loadedRadius = R;
+  $("#list").innerHTML = `<div class="status">Finner spots innen ${R} km …</div>`;
+  $("#hero").innerHTML = `<div class="skel"></div>`;
+  const osmP = osmSpots(o, R).then(withFacing).catch(()=>[]);   // starter med en gang, venter ikke på den
+  try{
+    let spots = await withFacing(builtInSpots(o, R));
+    if(seq!==loadSeq) return;
+    if(!spots.length){
+      // Ingen kjente spots her: vent på OpenStreetMap
+      $("#list").innerHTML = `<div class="status">Ingen kjente spots innen ${R} km. Leter i OpenStreetMap …</div>`;
+      spots = await osmP;
+      if(seq!==loadSeq) return;
+      if(!spots.length){ state.forecast=[]; state.drive=[]; render(); renderEmpty(R); return; }
+      await showSpots(seq, o, spots);
+      return;
+    }
+    $("#list").innerHTML = `<div class="status">Henter varsel for ${spots.length} spots …</div>`;
+    if(!await showSpots(seq, o, spots)) return;
+    // Legg til OSM-spots hvis Overpass svarer
+    const extra = await osmP;
+    if(seq!==loadSeq || !extra.length) return;
+    const merged = merge(spots, extra);
+    if(merged.length > spots.length) await showSpots(seq, o, merged);
+  }catch(e){
+    console.error(e);
+    if(seq!==loadSeq) return;
+    $("#list").innerHTML = `<div class="status err">Fikk ikke hentet varselet. Sjekk nettet og trykk Oppdater.</div>`;
+    $("#hero").innerHTML = "";
+  }
+}
+function renderEmpty(R){
+  $("#hero").innerHTML = "";
+  $("#list").innerHTML = `<div class="status">Fant ingen spots ved havet innen ${R} km. Øk maks kjøretid eller søk et annet sted.</div>`;
+}
+
+// ---------- Oppstart ----------
+$("#skill").value = state.skill; $("#maxDrive").value = state.maxDrive; $("#when").value = state.when;
+$("#skill").onchange = e=>{ state.skill = e.target.value; store.set("skill",state.skill); render(); };
+$("#when").onchange = e=>{ state.when = e.target.value; store.set("when",state.when); render(); };
+$("#maxDrive").onchange = e=>{
+  state.maxDrive = +e.target.value; store.set("maxDrive",state.maxDrive);
+  if(RADIUS_KM[state.maxDrive] > state.loadedRadius) loadAll(); else render();
+};
+$("#refresh").onclick = async ()=>{ if(state.origin?.gps){ const g = await locate(); if(g) setOrigin(g); } loadAll(); };
+$("#gps").onclick = async ()=>{
+  $("#whereTxt").textContent = "Finner posisjonen din …";
+  const g = await locate();
+  if(g){ setOrigin(g); loadAll(); }
+  else { $("#whereTxt").innerHTML = `<span class="err">Fikk ikke posisjon. Tillat posisjon i nettleseren, eller søk sted under.</span>`; }
+};
+$("#searchForm").onsubmit = async e=>{
+  e.preventDefault();
+  const q = $("#q").value.trim(); if(!q) return;
+  $("#whereTxt").textContent = "Søker …";
+  try{ const p = await geocode(q); if(p){ setOrigin(p); $("#q").value=""; loadAll(); } else $("#whereTxt").innerHTML = `<span class="err">Fant ikke «${esc(q)}»</span>`; }
+  catch(err){ $("#whereTxt").innerHTML = `<span class="err">Søket feilet. Prøv igjen.</span>`; }
+};
+
+(async ()=>{
+  // #Ericeira i lenken starter fra det stedet uten å spørre om posisjon
+  const hash = decodeURIComponent(location.hash.slice(1));
+  if(hash){ const p = await geocode(hash).catch(()=>null); if(p){ setOrigin(p); return loadAll(); } }
+  const g = await locate();
+  if(g) setOrigin(g);
+  else {
+    const last = store.get("origin");
+    if(last && last.lat!=null) setOrigin(last);
+    else { setOrigin({name:"Oslo",lat:59.913,lon:10.752}); $("#whereTxt").innerHTML = `<span class="err">Fikk ikke posisjon.</span> Viser Oslo. Søk sted eller trykk «Bruk min posisjon».`; }
+  }
+  loadAll();
+})();
+</script>
+</body>
+</html>
