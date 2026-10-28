@@ -240,7 +240,8 @@ if(!o){
   if(MIX){document.querySelector('.prod b').textContent=Q+' × 3D-reklamefilm';document.querySelector('.prod small').textContent=pk+' · lyd og musikk · logoen din i 3D';document.querySelector('.prod .pr').textContent=FL.reduce(function(a,k){return a+(PAKKE[k]||99);},0)+' kr';}
   else{document.querySelector('.prod b').textContent=(Q>1?Q+' × ':'')+'3D-reklamefilm · '+pk;document.querySelector('.prod small').textContent=LEN[pk]+' · lyd og musikk · logoen din i 3D';document.querySelector('.prod .pr').textContent=(PAKKE[pk]||99)+' kr'+(Q>1?' / stk':'');}
   document.querySelectorAll('.js-pris').forEach(function(e){e.textContent=PRIS;});
-  if(nF>1){document.getElementById('xtra').style.display='flex';document.getElementById('xtraTxt').textContent=(nF-1)+' ekstra format'+(nF>2?'er':'')+' × 10 kr'+(Q>1?' × '+Q+' filmer':'');document.getElementById('xtraPr').textContent='+'+(nF-1)*10*Q+' kr';}
+  var XN=(o.ekstraformater!=null&&o.ekstraformater!=='')?+o.ekstraformater:(nF-1)*Q;
+  if(XN>0){document.getElementById('xtra').style.display='flex';document.getElementById('xtraTxt').textContent=XN+' ekstra format'+(XN>1?'er':'')+' × 10 kr';document.getElementById('xtraPr').textContent='+'+XN*10+' kr';}
   PAY_CARD_URL=PAY_LINKS[UNIT+'x'+Q]||PAY_CARD_URL;document.getElementById('o-besk').innerHTML=(o.beskrivelse||'-').split('\n').map(function(l){return '«'+l.replace(/[<>&]/g,function(c){return {'<':'&lt;','>':'&gt;','&':'&amp;'}[c];})+'»';}).join('<br>');set('o-epost',o.email);
   document.getElementById('o-id').textContent='Ordrenummer '+o.id;
   var first=(o.name||'').trim().split(/\s+/)[0];if(first)document.getElementById('hiName').textContent=first+', så setter vi i gang.';
