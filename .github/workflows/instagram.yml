@@ -1,0 +1,49 @@
+name: Instagram (daglig kl. 09)
+
+on:
+  schedule:
+    # 06:40 UTC = 07:40 vinter / 08:40 sommer i Oslo. Scriptet venter selv til 09:00 norsk tid.
+    - cron: "40 6 * * *"
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "Testkjøring (lag container, ikke publiser)"
+        type: boolean
+        default: true
+
+permissions:
+  contents: write
+
+concurrency:
+  group: instagram
+  cancel-in-progress: false
+
+jobs:
+  post:
+    runs-on: ubuntu-latest
+    timeout-minutes: 150
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: instagram
+          sparse-checkout-cone-mode: true
+      - run: pip install --quiet requests
+      - name: Legg ut dagens video
+        env:
+          IG_TOKEN: ${{ secrets.KLIPPFILM_IG_TOKEN }}
+          IG_USER_ID: ${{ secrets.KLIPPFILM_IG_USER_ID }}
+          BREVO_API_KEY: ${{ secrets.BREVO_API_KEY }}
+          VARSEL_TIL: ${{ secrets.VARSEL_TIL }}
+          DRY_RUN: ${{ github.event_name == 'workflow_dispatch' && inputs.dry_run && 'true' || 'false' }}
+          VENT: ${{ github.event_name == 'schedule' && 'true' || 'false' }}
+        run: python3 instagram/post.py
+      - name: Lagre køen
+        if: always()
+        run: |
+          if ! git diff --quiet instagram/ko.json; then
+            git config user.name "klippfilm-bot"
+            git config user.email "hei@klippfilm.no"
+            git add instagram/ko.json
+            git commit -m "Instagram: publisert $(date -u +%F)"
+            git push
+          fi
