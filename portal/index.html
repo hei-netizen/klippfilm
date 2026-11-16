@@ -71,6 +71,8 @@ main{max-width:1280px;margin:0 auto;padding:20px 16px 80px}
 .moves button.go{background:var(--ink);color:#fff;border-color:var(--ink)}
 .moves button:disabled{opacity:.5;cursor:default}
 textarea.note{width:100%;min-height:62px;border:1px solid var(--line);border-radius:10px;padding:9px 11px;resize:vertical;background:#fff;font-size:14px}
+.pay{display:inline-block;font-size:12.5px;font-weight:700;border-radius:999px;padding:3px 10px;margin-bottom:10px}
+.pay.ok{background:#E7F5EC;color:var(--ok)}.pay.res{background:#FFF4DB;color:#8A6100}
 .saved{font-size:12.5px;color:var(--ok);font-weight:600;height:18px;margin-top:4px}
 .todo{max-width:760px}
 .add{display:flex;gap:8px;margin-bottom:16px}
@@ -135,7 +137,7 @@ textarea.note{width:100%;min-height:62px;border:1px solid var(--line);border-rad
 <script>
 var HOOK='https://hook.eu1.make.com/l21mgtynhduw9sdut9wfbv1rho7255ua';
 var COLS=[['Ny','ny'],['Betalt','betalt'],['I produksjon','prod'],['Levert','levert']];
-var token=null,orders=[],todos=[],openId=null,busy=false;
+var token=null,orders=[],todos=[],pays={},openId=null,busy=false;
 try{token=localStorage.getItem('klipp_portal');}catch(e){}
 
 function $(id){return document.getElementById(id);}
@@ -160,6 +162,9 @@ function load(fromLogin){
     var b=(vr[0]&&vr[0].values)||[],g=(vr[1]&&vr[1].values)||[];
     orders=b.slice(1).map(function(r,i){return {rad:i+2,mottatt:r[0]||'',ordre:r[1]||'',navn:r[2]||'',epost:r[3]||'',nettside:r[4]||'',pakke:r[5]||'',antall:r[6]||'',formater:r[7]||'',pris:r[8]||'',besk:r[9]||'',viser:r[10]||'',status:r[11]||'Ny',notat:r[12]||'',tlf:r[13]||''};}).filter(function(o){return o.ordre;});
     todos=g.slice(1).map(function(r,i){return {rad:i+2,opprettet:r[0]||'',tekst:r[1]||'',ferdig:r[2]||'',notat:r[3]||''};}).filter(function(t){return t.tekst;});
+    /* betalinger fra Stripe/Vipps (fanen Betalinger): Betalt slår Reservert */
+    pays={};((vr[2]&&vr[2].values)||[]).slice(1).forEach(function(r){var id=r[1];if(!id)return;var cur=pays[id];if(!cur||(r[4]==='Betalt'&&cur.status!=='Betalt'))pays[id]={kilde:r[2]||'',belop:r[3]||'',status:r[4]||''};});
+    orders.forEach(function(o){var p=pays[o.ordre];if(p&&p.status==='Betalt'&&o.status==='Ny'){o.status='Betalt';call({handling:'lagre',felt:'status',rad:o.rad,body:JSON.stringify({values:[['Betalt']]})}).catch(function(){});}});
     $('login').style.display='none';$('app').style.display='block';
     render();
     $('upd').textContent='Oppdatert '+new Date().toLocaleTimeString('nb-NO',{hour:'2-digit',minute:'2-digit'});
@@ -202,6 +207,7 @@ function card(o){
       '<span>Viser</span><p>'+esc(o.viser||'-')+'</p>'+
       '<span>Formater</span><p>'+esc(o.formater||'-')+'</p>'+
       '<span>Mottatt</span><p>'+esc(o.mottatt)+'</p></div>'+
+    (pays[o.ordre]?'<span class="pay '+(pays[o.ordre].status==='Betalt'?'ok':'res')+'">'+(pays[o.ordre].status==='Betalt'?'Betalt':'Reservert, ikke trukket')+' · '+esc(pays[o.ordre].kilde)+' '+esc(pays[o.ordre].belop)+' kr</span>':'')+
     '<div class="besk">'+esc(o.besk||'Ingen beskrivelse')+'</div>'+
     '<div class="moves">'+moves+'</div>'+
     '<textarea class="note" placeholder="Notat (lagres når du klikker utenfor)">'+esc(o.notat)+'</textarea><div class="saved"></div></div></div>';
