@@ -1,12 +1,13 @@
 #!/usr/bin/env python3
 """Daglig Instagram-posting for @klippfilm.no (kjøres av GitHub Actions, se .github/workflows/instagram.yml).
 
-Tar første upubliserte video i instagram/ko.json med dato i dag eller tidligere, venter til kl. 09:00
-norsk tid og legger den ut som Reel. Oppdaterer ko.json (workflowen committer), og sender e-post til Jona
+Kjøres hvert 10. minutt om morgenen (GitHub dropper av og til planlagte kjøringer). Før kl. 09:00 norsk
+tid gjør den ingenting; etter 09:00 legger den ut første upubliserte video i instagram/ko.json med dato i dag
+eller tidligere, maks én per dag, og sjekker Instagram først så den aldri dobbeltposter. Oppdaterer ko.json (workflowen committer), og sender e-post til Jona
 via Brevo: lenke til posten, hvor mange som er igjen, og varsel når køen nærmer seg tom eller noe feiler.
 
 Miljø: IG_TOKEN, IG_USER_ID, BREVO_API_KEY, VARSEL_TIL, DRY_RUN ("true" = lag container, ikke publiser),
-       VENT ("false" = ikke vent til 09:00, brukes ved manuell kjøring).
+       VENT ("false" = ikke vent på 09:00, brukes ved manuell kjøring).
 """
 import datetime as dt, json, os, sys, time
 from zoneinfo import ZoneInfo
@@ -49,17 +50,25 @@ def main():
     if not klare:
         igjen = [p for p in ko if not p.get("publisert")]
         print(f"Ingenting å poste i dag ({idag}). {len(igjen)} i køen.")
-        if not igjen and na.weekday() == 0:
+        if not igjen and na.weekday() == 0 and na.hour == 9 and na.minute < 10:  # én gang, mandag morgen
             varsle("Instagram-køen er tom", "Det ligger ingen videoer i køen for @klippfilm.no. Åpne Claude på Macen og si «lag neste bunke».")
         return
     post = klare[0]
 
-    if VENT and not DRY:
-        mal = na.replace(hour=9, minute=0, second=0, microsecond=0)
-        if na < mal:
-            sek = (mal - na).total_seconds()
-            print(f"Venter {sek / 60:.0f} min til 09:00 norsk tid.")
-            time.sleep(sek)
+    if VENT and not DRY and na.hour < 9:
+        print(f"Klokka er {na:%H:%M} i Oslo. Poster først etter 09:00.")
+        return
+    if not DRY and any((p.get("publisert") or "").startswith(idag) for p in ko):
+        print("Allerede postet i dag.")
+        return
+    # sperre mot dobbeltpost: har denne captionen allerede blitt lagt ut?
+    siste = kall("GET", f"{API}/{UID}/media", params={"fields": "caption,permalink,timestamp", "limit": 10, "access_token": TOKEN})
+    for m in siste.get("data", []):
+        if (m.get("caption") or "").strip() == post["caption"].strip():
+            post["publisert"], post["lenke"] = m["timestamp"][:16], m.get("permalink")
+            json.dump(ko, open(KO, "w", encoding="utf-8"), ensure_ascii=False, indent=2)
+            print(f"«{post['navn']}» ligger allerede ute ({m.get('permalink')}). Markert som publisert.")
+            return
 
     c = kall("POST", f"{API}/{UID}/media", data={"media_type": "REELS", "video_url": post["video_url"],
                                                   "caption": post["caption"], "share_to_feed": "true", "access_token": TOKEN})
@@ -80,7 +89,7 @@ def main():
 
     p = kall("POST", f"{API}/{UID}/media_publish", data={"creation_id": cid, "access_token": TOKEN})
     lenke = kall("GET", f"{API}/{p['id']}", params={"fields": "permalink", "access_token": TOKEN}).get("permalink", "")
-    post["publisert"] = dt.datetime.now(OSLO).isoformat(timespec="minutes")
+    post["publisert"] = dt.datetime.now(OSLO).strftime("%Y-%m-%dT%H:%M")
     post["lenke"] = lenke
     json.dump(ko, open(KO, "w", encoding="utf-8"), ensure_ascii=False, indent=2)
     igjen = sum(1 for x in ko if not x.get("publisert"))
