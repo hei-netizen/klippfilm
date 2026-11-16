@@ -101,17 +101,8 @@ def main():
                    "Åpne Claude på Macen og si «lag neste bunke».")
     varsle(f"Lagt ut på Instagram: {post['navn']}",
            f"Dagens video er lagt ut på @klippfilm.no:<br><a href=\"{lenke}\">{lenke}</a><br><br>{igjen} igjen i køen.{tillegg}")
-
-    if na.weekday() == 0:  # fornyer tokenet hver mandag, så det aldri går ut
-        try:
-            ny = kall("GET", "https://graph.instagram.com/refresh_access_token",
-                      params={"grant_type": "ig_refresh_token", "access_token": TOKEN})
-            if ny.get("access_token") and ny["access_token"] != TOKEN:
-                varsle("Instagram-nøkkelen må oppdateres",
-                       "Instagram ga en ny nøkkel ved fornyelse. Åpne Claude på Macen og si «oppdater Instagram-nøkkelen i GitHub».")
-        except Exception as e:
-            print("Fornyelse feilet:", e)
-
+    # Tokenet fornyes på Macen når en ny bunke lages (ig_post.py forny + gh secret set), ikke her:
+    # Instagram gir en ny tokenstreng ved fornyelse, og den kan ikke lagres tilbake som secret herfra.
 
 if __name__ == "__main__":
     try:
